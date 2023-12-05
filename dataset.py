@@ -67,23 +67,23 @@ class LandCoverData():
     TRAIN_PIXELS_MAX = 24356
 
 
-# def numpy_parse_image(image_path):
-#     """Load an image and its segmentation mask as numpy arrays and returning a tuple
-#     Args:
-#         image_path (bytes): path to image
-#     Returns:
-#         (numpy.array[uint16], numpy.array[uint8]): the image and mask arrays
-#     """
-#     image_path = Path(bytes.decode(image_path))
-#     # get mask path from image path:
-#     # image should be in a images/<image_id>.tif subfolder, while the mask is at masks/<image_id>.tif
-#     mask_path = image_path.parent.parent/'masks'/image_path.name
-#     with TiffFile(image_path) as tifi, TiffFile(mask_path) as tifm:
-#         image = tifi.asarray()
-#         mask = tifm.asarray()
-#         # add channel dimension to mask: (256, 256, 1)
-#         mask = mask[..., None]
-#     return image, mask
+def numpy_parse_image(image_path):
+    """Load an image and its segmentation mask as numpy arrays and returning a tuple
+    Args:
+        image_path (bytes): path to image
+    Returns:
+        (numpy.array[uint16], numpy.array[uint8]): the image and mask arrays
+    """
+    image_path = Path(bytes.decode(image_path))
+    # get mask path from image path:
+    # image should be in a images/<image_id>.tif subfolder, while the mask is at masks/<image_id>.tif
+    mask_path = image_path.parent.parent/'masks'/image_path.name
+    with TiffFile(image_path) as tifi, TiffFile(mask_path) as tifm:
+        image = tifi.asarray()
+        mask = tifm.asarray()
+        # add channel dimension to mask: (256, 256, 1)
+        mask = mask[..., None]
+    return image, mask
 
 
 # @tf.function(input_signature=[tf.TensorSpec(None, tf.string)])
