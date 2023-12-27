@@ -1,6 +1,8 @@
 # landcover
 Il reste a faire :
 
+-Scheduler ?? 
+
 -Data_augment + créer un ensemble de test commun pour tout le monde (yann)
 
 -Choisir des Metriques (cf git)
