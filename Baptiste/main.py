@@ -15,14 +15,12 @@ from arg_parser import parser
 
 
 if __name__ == "__main__":
-  # Exemple d'utilisation
+  args = parser()
   means =  [ 378.48734924,  631.65566376,  531.96720581, 3500.04284851]
-
   stds =  [294.72591834, 359.42661458, 488.99842265, 752.03863059]
   # Specify the mean and std for each channel in the transforms.Normalize
-  cur_means = means[:4]  # Take the first 4 values
-  cur_stds = stds[:4]    # Take the first 4 values
-
+  cur_means = means[:4]  
+  cur_stds = stds[:4]    
   # Utilisez les bonnes transformations
   data_transforms = {
       'train': transforms.Compose([
@@ -30,8 +28,6 @@ if __name__ == "__main__":
           transforms.Normalize(cur_means, cur_stds),
       ])
   }
-
-  args = parser()
   if args.segformer :
       model,optimizer=segformer()
   elif args.unet :
@@ -43,8 +39,8 @@ if __name__ == "__main__":
   val_size = len(dataset) - train_size
   train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
-  train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-  val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
+  train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
+  val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
   data_loaders = {'train': train_loader, 'val': val_loader}
 
@@ -64,7 +60,7 @@ if __name__ == "__main__":
 
   model.to(device)
 
-  Num_epoch=100
+  Num_epoch=1
 
   train_losses,val_losses , model  = train_model(model, optimizer,  Num_epoch,data_loaders)
 
