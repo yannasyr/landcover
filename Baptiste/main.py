@@ -1,3 +1,4 @@
+#!C:\Users\BABA\AppData\Local\Programs\Python\Python310\python.exe
 import torchvision.transforms as transforms
 from Landscapedata import LandscapeData
 from train import train_model
@@ -6,11 +7,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, random_split
-from metrics import mesure_on_dataloader , affichage
+from metrics import mesure_on_dataloader , affichage , calculate_metrics
 import os 
 from models import segformer
 from arg_parser import parser
-
 
 
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
   elif args.unet :
       model , optimizer = None
 
-  data_folder = "dataset//train"
+  data_folder = "small_dataset"
   dataset = LandscapeData(data_folder, transform=data_transforms['train'])  # Utilisez la transformation 'train'
   train_size = int(0.8 * len(dataset))
   val_size = len(dataset) - train_size
@@ -70,8 +70,9 @@ if __name__ == "__main__":
   plt.ylabel('Loss')
   plt.legend()
   plt.show()
-  affichage(model,val_loader,device)
-  print(mesure_on_dataloader(val_loader,device,model))
+  #affichage(model,val_loader,device)
+  metrics = calculate_metrics(model, val_loader, device, 10)
+  print(metrics)
 
     # save best model 
   print("Saving best model...")
