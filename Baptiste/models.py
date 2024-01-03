@@ -1,6 +1,7 @@
 from transformers import SegformerModel, SegformerConfig
 from transformers import AutoImageProcessor, SegformerForSemanticSegmentation
 import torch
+import torch.nn as nn
 
 def segformer(lr=0.0001):
 
@@ -17,6 +18,8 @@ def segformer(lr=0.0001):
     # move model to GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
+
+
     return model,optimizer
 
 

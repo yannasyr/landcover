@@ -4,6 +4,7 @@ from torchvision import transforms
 import torch
 import copy 
 
+import torch.nn as nn
 
 
 

@@ -8,7 +8,7 @@ def parser():
     # Ajoutez des arguments pour spécifier le modèle
     parser.add_argument('--segformer',  action='store_true', help='SegFormer for semantic segmantation')
     parser.add_argument('--unet', action='store_true', help='Unet')
-    parser.add_argument('--batch-size', action='store_true', default=16,help='taille de batch')
+    parser.add_argument('--batch_size', '-batch', default=16, type=int, help='batch_size')    
     
     # Analyser les arguments de la ligne de commande
     args = parser.parse_args()

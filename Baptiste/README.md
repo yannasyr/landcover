@@ -1,20 +1,9 @@
 # landcover
 Il reste a faire :
 
--le code de metrics ne marche pas j'arrive pas trop chiant le modele faudrait faire un autre code pour les metriques de Unet aussi yann help les métriques c'est : 
-precision 
+- Les metriques c'est fait en fait 
 
-F1 score 
 
-OA 
-
-recall 
-
-IOU golbal 
-
-IoU pour chaque classe 
-
-KL divergence lui il marche
 
 -Scheduler ?? 
 

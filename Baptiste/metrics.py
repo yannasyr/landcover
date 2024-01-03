@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt  # Fix import statement
 from LandCoverData import LandCoverData
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+from datasets import load_metric
+import torch.nn as nn
 
 
 
@@ -106,33 +108,28 @@ def affichage(model,data_loader,device):
   
 
 
-def calculate_metrics(model, val_loader, device, num_classes):
-    all_true_labels = []
-    all_pred_labels = []
-
+def compute_average_metrics(model, val_loader):
     model.eval()
-
+    metric = load_metric("mean_iou",trust_remote_code=True)
     with torch.no_grad():
-        for i, (test_inputs, test_targets) in enumerate(val_loader):
-            test_pixels_values = test_inputs.to(device)
-            test_targets = test_targets.cpu().numpy()
-            
-            test_outputs = model(pixel_values=test_pixels_values)
-            test_logits = test_outputs.logits
+        for inputs, targets in val_loader:
+            pixel_values = inputs.to('cuda:0')
+            labels = targets.to('cuda:0')
+            outputs = model(pixel_values=pixel_values, labels=labels)
 
-            _, predicted_labels = torch.max(test_logits, dim=1)
-            predicted_labels = predicted_labels.cpu().numpy()
+            logits = outputs.logits
 
-            all_true_labels.extend(test_targets.flatten())
-            all_pred_labels.extend(predicted_labels.flatten())
+            upsampled_logits = nn.functional.interpolate(logits, size=labels.shape[-2:], mode="bilinear", align_corners=False)
+            predicted = upsampled_logits.argmax(dim=1)
+            metric.add_batch(predictions=predicted.detach().cpu().numpy(), references=labels.detach().cpu().numpy())
 
-    metrics = {
-        'Precision': precision_score(all_true_labels, all_pred_labels, average='weighted'),
-        'F1 Score': f1_score(all_true_labels, all_pred_labels, average='weighted'),
-        'Overall Accuracy': accuracy_score(all_true_labels, all_pred_labels),
-        'Recall': recall_score(all_true_labels, all_pred_labels, average='weighted'),
-        'Confusion Matrix': confusion_matrix(all_true_labels, all_pred_labels),
-        # Add other metrics as needed
-    }
+    metrics = metric.compute(num_labels=10,
+                             ignore_index=255,
+                             reduce_labels=False  # we've already reduced the labels before
+                             )
 
-    return metrics
+    mean_iou = metrics["mean_iou"]
+    mean_accuracy = metrics["mean_accuracy"]
+    per_category_iou = metrics["per_category_iou"]
+
+    return mean_iou, mean_accuracy, per_category_iou
