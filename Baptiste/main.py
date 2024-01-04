@@ -1,10 +1,8 @@
-#!C:\Users\BABA\AppData\Local\Programs\Python\Python310\python.exe
 import torchvision.transforms as transforms
 from Landscapedata import LandscapeData
 from train import train_model
 from torchvision import transforms
 import matplotlib.pyplot as plt
-import numpy as np
 import torch
 from torch.utils.data import DataLoader, random_split
 from metrics import mesure_on_dataloader , affichage , compute_average_metrics
@@ -12,27 +10,27 @@ import os
 from models import segformer, UNet2
 from arg_parser import parser
 import torch.optim as optim
-import torch.nn as nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from collections import Counter
-from torchvision.models.segmentation import fcn_resnet50, FCN_ResNet50_Weights
 
 
 if __name__ == "__main__":
 
     args = parser()
+    ##Normalisation 
     means =  [ 418.19976217,  703.34810956,  663.22678147, 3253.46844222]
     stds =  [294.73191962, 351.31328415, 484.47475774, 793.73928079]
-    # Specify the mean and std for each channel in the transforms.Normalize
     cur_means = means[:4]  
     cur_stds = stds[:4]    
-    # Utilisez les bonnes transformations
+    ##transformations
     data_transforms = {
         'train': transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize(cur_means, cur_stds),
         ])
     }
+
+    ##model selection
     if args.segformer :
         model,optimizer=segformer()
     elif args.unet :
@@ -40,10 +38,12 @@ if __name__ == "__main__":
         print(model)
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
-   
+    # move model to GPU
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
 
 
-
+    ##dataset and dataloader
     data_folder = "dataset\\train"
     dataset = LandscapeData(data_folder, transform=data_transforms['train'])  # Utilisez la transformation 'train'
     train_size = int(0.8 * len(dataset))
@@ -54,9 +54,6 @@ if __name__ == "__main__":
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
     data_loaders = {'train': train_loader, 'val': val_loader}
-
-
-
 
     #Initialize a Counter to count class frequencies
     class_counter = Counter()
@@ -75,18 +72,12 @@ if __name__ == "__main__":
 
 
 
-    # move model to GPU
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-    model.to(device)
-
+    #hyperparametres
     Num_epoch=200
-    
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=2, factor=0.1)
-
+    ##training
     train_losses,val_losses , model  = train_model(model, optimizer,scheduler,  Num_epoch,data_loaders)
-
+    ##plot losses
     plt.plot(train_losses, label='Train Loss')
     plt.plot(val_losses, label='Validation Loss')
     plt.xlabel('Epoch')
@@ -94,25 +85,28 @@ if __name__ == "__main__":
     plt.legend()
     plt.show()
 
+
+    ##Eval on val loader 
     affichage(model,val_loader,device)
     #print(mesure_on_dataloader(val_loader,device,model))
-    mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, val_loader,classes_to_ignore=[0,1,7,8,9])
-
+    mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, val_loader,classes_to_ignore=args.classes_to_ignore)
     print("Mean_iou:", mean_iou)
     print("Mean accuracy:", mean_accuracy)
     print("IoU per category", per_category_iou)
     print("OA", Overall_acc)
 
-
-
-    
     # # save best model 
-    # print("Saving best model...")
-    # if not os.path.isdir('checkpoint'):
-    #         os.mkdir('checkpoint')
-    # save_point = os.path.join("checkpoint", )
-    # torch.save(model.state_dict(), save_point + '.pt')
-    # print("Model saved!")
+    print("Saving best model...")
+    if not os.path.isdir('checkpoint'):
+            os.mkdir('checkpoint')
+    save_point = os.path.join("checkpoint", )
+    torch.save(model.state_dict(), save_point + '.pt')
+    print("Model saved!")
+
+
+
+
+
 
 
 ##SegFormer##
@@ -123,10 +117,6 @@ if __name__ == "__main__":
 
 
 ##segFormer## classes exclu : [0,1,7,8,9]
-
-
-
-
 
 
 ##Unet##
