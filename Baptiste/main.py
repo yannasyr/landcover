@@ -9,9 +9,11 @@ import torch
 from torch.utils.data import DataLoader, random_split
 from metrics import mesure_on_dataloader , affichage , compute_average_metrics
 import os 
-from models import segformer
+from models import segformer, UNet2
 from arg_parser import parser
-
+import torch.optim as optim
+import torch.nn as nn
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
 
@@ -33,7 +35,8 @@ if __name__ == "__main__":
     if args.segformer :
         model,optimizer=segformer()
     elif args.unet :
-        model , optimizer = None
+        model = UNet2(4, 10, bilinear=False).to('cuda:0')
+        optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
     data_folder = "dataset\\train"
     dataset = LandscapeData(data_folder, transform=data_transforms['train'])  # Utilisez la transformation 'train'
@@ -54,17 +57,14 @@ if __name__ == "__main__":
     # move model to GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    if args.segformer :
-        model,optimizer=segformer()
-    elif args.unet :
-        model , optimizer = None
-
 
     model.to(device)
 
     Num_epoch=200
+    
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=2, factor=0.1)
 
-    train_losses,val_losses , model  = train_model(model, optimizer,  Num_epoch,data_loaders)
+    train_losses,val_losses , model  = train_model(model, optimizer,scheduler,  Num_epoch,data_loaders)
 
     plt.plot(train_losses, label='Train Loss')
     plt.plot(val_losses, label='Validation Loss')
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.show()
 
-    print(mesure_on_dataloader(val_loader,device,model))
+    #print(mesure_on_dataloader(val_loader,device,model))
     mean_iou, mean_accuracy, per_category_iou = compute_average_metrics(model, val_loader)
 
     print("Mean_iou:", mean_iou)
@@ -91,30 +91,15 @@ if __name__ == "__main__":
     # print("Model saved!")
 
 
-#0.13
-#0.29
+##SegFormer##
+#     Mean_iou: 0.5198857023384602
+# Mean accuracy: 0.6122436394994278
+# IoU per category [       nan 0.         0.66164696 0.74257229 0.76370562 0.67365327
+#  0.64458844 0.38187744 0.         0.8109273 ]
 
+##Unet##
+# Mean_iou: 0.488395057931877
+# Mean accuracy: 0.5732042679625972
+# IoU per category [       nan 0.         0.68719141 0.78629205 0.78929071 0.6984251
+#  0.68911637 0.         0.         0.74523988]
 
-
-    # # Assuming val_loader is your data loader
-    # for inputs, targets in val_loader:
-    #     with torch.no_grad():
-
-    #         pixel_values = inputs.to('cuda:0')
-    #         labels = targets.to('cuda:0')
-    #         outputs = model(pixel_values=pixel_values, labels=labels)
-
-    #         logits=outputs.logits
-
-    #         upsampled_logits = nn.functional.interpolate(logits, size=labels.shape[-2:], mode="bilinear", align_corners=False)
-    #         predicted = upsampled_logits.argmax(dim=1)
-    #         metric.add_batch(predictions=predicted.detach().cpu().numpy(), references=labels.detach().cpu().numpy())
-
-    #         metrics = metric.compute(num_labels=10, 
-    #                                 ignore_index=255,
-    #                                 reduce_labels=False, # we've already reduced the labels before)
-    #         )
-
-    #         print("Mean_iou:", metrics["mean_iou"])
-    #         print("Mean accuracy:", metrics["mean_accuracy"])
-    #         print("IoU per category",metrics["per_category_iou"])

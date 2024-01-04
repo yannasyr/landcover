@@ -6,7 +6,8 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from datasets import load_metric
 import torch.nn as nn
-
+from arg_parser import parser
+args = parser()
 
 
 
@@ -115,9 +116,12 @@ def compute_average_metrics(model, val_loader):
         for inputs, targets in val_loader:
             pixel_values = inputs.to('cuda:0')
             labels = targets.to('cuda:0')
-            outputs = model(pixel_values=pixel_values, labels=labels)
-
-            logits = outputs.logits
+            if args.unet : 
+              outputs = model(pixel_values)
+              logits=outputs
+            else : 
+              outputs = model(pixel_values=pixel_values, labels=labels)
+              logits = outputs.logits
 
             upsampled_logits = nn.functional.interpolate(logits, size=labels.shape[-2:], mode="bilinear", align_corners=False)
             predicted = upsampled_logits.argmax(dim=1)

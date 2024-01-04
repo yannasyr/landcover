@@ -3,19 +3,22 @@ from timeit import default_timer as timer
 from torchvision import transforms
 import torch
 import copy 
-
+from arg_parser import parser
 import torch.nn as nn
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
+args = parser()
 
 
 
-def train_model(model, optimizer, num_epochs,data_loaders, patience=5):
+def train_model(model, optimizer,scheduler, num_epochs,data_loaders, patience=5):
     since = time.time()
     train_losses = []
     val_losses = []
     best_val_loss = float('inf')
     consecutive_epochs_no_improvement = 0
     best_model_wts = copy.deepcopy(model.state_dict())
-
+    criterion = nn.CrossEntropyLoss()
     dataset_sizes = {phase: len(data_loaders[phase].dataset) for phase in ['train', 'val']}
 
     for epoch in range(num_epochs):
@@ -36,8 +39,14 @@ def train_model(model, optimizer, num_epochs,data_loaders, patience=5):
                 optimizer.zero_grad()
 
                 with torch.set_grad_enabled(phase == 'train'):
-                    outputs = model(pixel_values=pixel_values, labels=labels)
-                    loss, logits = outputs.loss, outputs.logits
+                    if args.unet :
+                        outputs = model(pixel_values)
+                        logits = outputs
+                        loss = criterion(logits, labels.squeeze(dim=1))
+                    else : 
+                        outputs = model(pixel_values=pixel_values, labels=labels)
+                        loss, logits = outputs.loss, outputs.logits
+
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
@@ -47,6 +56,9 @@ def train_model(model, optimizer, num_epochs,data_loaders, patience=5):
             epoch_loss = running_loss[phase] / dataset_sizes[phase]
 
             print('{} Loss: {:.4f}'.format(phase, epoch_loss))
+            if phase == 'val':
+                scheduler.step(epoch_loss)  # Step the scheduler on validation loss
+
 
             if phase == 'train':
                 train_losses.append(epoch_loss)

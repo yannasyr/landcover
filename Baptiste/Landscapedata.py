@@ -61,15 +61,16 @@ class LandscapeData(Dataset):
         image = self.transform(image)
         
         args = parser()
+
+
         if args.segformer : 
             # Modifiez la transformation pour le masque
             label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
-
             label = label.squeeze()  # Supprimer la dimension ajoutée
         else :
-            label = self.transform(label)
+            label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
 
-
+ 
 
 
         return image, label
