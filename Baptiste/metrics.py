@@ -2,8 +2,6 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt  # Fix import statement
 from LandCoverData import LandCoverData
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from datasets import load_metric
 import torch.nn as nn
 from arg_parser import parser
