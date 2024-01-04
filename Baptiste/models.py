@@ -9,6 +9,7 @@ def segformer(lr=0.0001):
     config = SegformerConfig(
         num_labels=10,
         num_channels=4,
+        semantic_loss_ignore_index=0,
         patch_sizes = [3, 2, 2, 2]
     )
 
