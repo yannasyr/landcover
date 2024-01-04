@@ -109,7 +109,7 @@ def affichage(model,data_loader,device):
   
 
 
-def compute_average_metrics(model, val_loader):
+def compute_average_metrics(model, val_loader, classes_to_ignore=[]):
     model.eval()
     metric = load_metric("mean_iou",trust_remote_code=True)
     with torch.no_grad():
@@ -125,10 +125,20 @@ def compute_average_metrics(model, val_loader):
 
             upsampled_logits = nn.functional.interpolate(logits, size=labels.shape[-2:], mode="bilinear", align_corners=False)
             predicted = upsampled_logits.argmax(dim=1)
+
+            # Créer un masque pour ignorer certaines classes
+            ignore_mask = torch.ones_like(labels)
+            for class_idx in classes_to_ignore:
+                ignore_mask[labels == class_idx] = 0
+
+            # Appliquer le masque d'ignorance aux prédictions et références
+            predicted = predicted * ignore_mask
+            labels = labels * ignore_mask
+
             metric.add_batch(predictions=predicted.detach().cpu().numpy(), references=labels.detach().cpu().numpy())
 
     metrics = metric.compute(num_labels=10,
-                             ignore_index=255,
+                             ignore_index=0,
                              reduce_labels=False  # we've already reduced the labels before
                              )
 
