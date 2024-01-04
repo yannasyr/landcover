@@ -3,8 +3,6 @@ Il reste a faire :
 
 -Data_augment + créer un ensemble de test commun pour tout le monde (yann)
 
--Ajout d'un parser pour choisir les classes a ignorer 
-
 -trouver un modele en plus de segfomer et Unet
 
 -Rapport (overleaf ??)
