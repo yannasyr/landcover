@@ -60,8 +60,12 @@ def affichage(model,data_loader,device):
   model.eval()
   # Perform inference on the validation image
   with torch.no_grad():
-      val_outputs = model(pixel_values=val_pixel_values)
-      val_logits = val_outputs.logits
+      if args.segformer :
+        val_outputs = model(pixel_values=val_pixel_values)
+        val_logits = val_outputs.logits
+      if args.unet :
+         val_outputs=model(val_pixel_values)
+         val_logits=val_outputs
 
   # Convert logits to predicted labels
   _, predicted_labels = torch.max(val_logits, dim=1)
@@ -138,12 +142,13 @@ def compute_average_metrics(model, val_loader, classes_to_ignore=[]):
             metric.add_batch(predictions=predicted.detach().cpu().numpy(), references=labels.detach().cpu().numpy())
 
     metrics = metric.compute(num_labels=10,
-                             ignore_index=0,
+                             ignore_index= 0,
                              reduce_labels=False  # we've already reduced the labels before
                              )
 
     mean_iou = metrics["mean_iou"]
     mean_accuracy = metrics["mean_accuracy"]
     per_category_iou = metrics["per_category_iou"]
+    Overall_Acc=metrics["overall_accuracy"]
 
-    return mean_iou, mean_accuracy, per_category_iou
+    return mean_iou, mean_accuracy, per_category_iou,Overall_Acc
