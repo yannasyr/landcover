@@ -61,15 +61,22 @@ class LandscapeData(Dataset):
         image = self.transform(image)
         
         args = parser()
+        classes_to_ignore = [0,1,7,8,9]  # Replace with actual class indices
 
 
         if args.segformer : 
             # Modifiez la transformation pour le masque
             label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
             label = label.squeeze()  # Supprimer la dimension ajoutée
-        else :
+        elif args.unet :
             label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
+        # Apply the mask of ignorance
+        ignore_mask = torch.ones_like(label)
+        for class_idx in classes_to_ignore:
+            ignore_mask[label == class_idx] = 0
 
+            # Apply the mask to the ground truth label
+            label = label * ignore_mask
  
 
 
