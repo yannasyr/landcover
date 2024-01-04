@@ -61,7 +61,7 @@ class LandscapeData(Dataset):
         image = self.transform(image)
         
         args = parser()
-        classes_to_ignore = [0,1,7,8,9]  # Replace with actual class indices
+        classes_to_ignore = args.classes_to_ignore  # Replace with actual class indices
 
 
         if args.segformer : 
