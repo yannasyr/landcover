@@ -25,7 +25,7 @@ def calculate_mean_and_std(image_path):
     return (mean_red, mean_green, mean_blue, mean_nir), (std_red, std_green, std_blue, std_nir)
 
 # Chemin du dossier contenant les images
-folder_path = '/content/drive/MyDrive/small_dataset/images'
+folder_path = 'dataset\\train\\images'
 
 # Initialiser des listes pour stocker les moyennes et écarts types de toutes les images
 all_means = []
