@@ -17,9 +17,7 @@ def segformer(lr=0.0001):
 
     # define optimizer
     optimizer = torch.optim.AdamW(model.parameters(), lr)
-    # move model to GPU
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model.to(device)
+
 
 
     return model,optimizer
