@@ -15,14 +15,14 @@ import torch.optim as optim
 import torch.nn as nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from collections import Counter
-
+from torchvision.models.segmentation import fcn_resnet50, FCN_ResNet50_Weights
 
 
 if __name__ == "__main__":
 
     args = parser()
-    means =  [ 378.48734924,  631.65566376,  531.96720581, 3500.04284851]
-    stds =  [294.72591834, 359.42661458, 488.99842265, 752.03863059]
+    means =  [ 418.19976217,  703.34810956,  663.22678147, 3253.46844222]
+    stds =  [294.73191962, 351.31328415, 484.47475774, 793.73928079]
     # Specify the mean and std for each channel in the transforms.Normalize
     cur_means = means[:4]  
     cur_stds = stds[:4]    
@@ -37,9 +37,14 @@ if __name__ == "__main__":
         model,optimizer=segformer()
     elif args.unet :
         model = UNet2(4, 10, bilinear=False).to('cuda:0')
+        print(model)
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
-    data_folder = "small_dataset"
+   
+
+
+
+    data_folder = "dataset\\train"
     dataset = LandscapeData(data_folder, transform=data_transforms['train'])  # Utilisez la transformation 'train'
     train_size = int(0.8 * len(dataset))
     val_size = len(dataset) - train_size
@@ -51,9 +56,7 @@ if __name__ == "__main__":
     data_loaders = {'train': train_loader, 'val': val_loader}
 
 
-    images, masks = next(iter(train_loader))
-    print("Image : ", images.shape)
-    print("masks : ", masks.shape)
+
 
     #Initialize a Counter to count class frequencies
     class_counter = Counter()
@@ -78,7 +81,7 @@ if __name__ == "__main__":
 
     model.to(device)
 
-    Num_epoch=100
+    Num_epoch=200
     
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=2, factor=0.1)
 
@@ -91,13 +94,15 @@ if __name__ == "__main__":
     plt.legend()
     plt.show()
 
-    #affichage(model,val_loader,device)
+    affichage(model,val_loader,device)
     #print(mesure_on_dataloader(val_loader,device,model))
-    mean_iou, mean_accuracy, per_category_iou = compute_average_metrics(model, val_loader,classes_to_ignore=[0,1,7,8,9])
+    mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, val_loader,classes_to_ignore=[0,1,7,8,9])
 
     print("Mean_iou:", mean_iou)
     print("Mean accuracy:", mean_accuracy)
     print("IoU per category", per_category_iou)
+    print("OA", Overall_acc)
+
 
 
     
@@ -115,6 +120,14 @@ if __name__ == "__main__":
 # Mean accuracy: 0.6122436394994278
 # IoU per category [       nan 0.         0.66164696 0.74257229 0.76370562 0.67365327
 #  0.64458844 0.38187744 0.         0.8109273 ]
+
+
+##segFormer## classes exclu : [0,1,7,8,9]
+
+
+
+
+
 
 ##Unet##
 # Mean_iou: 0.488395057931877
