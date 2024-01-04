@@ -14,6 +14,7 @@ from arg_parser import parser
 import torch.optim as optim
 import torch.nn as nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from collections import Counter
 
 
 
@@ -38,7 +39,7 @@ if __name__ == "__main__":
         model = UNet2(4, 10, bilinear=False).to('cuda:0')
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
-    data_folder = "dataset\\train"
+    data_folder = "small_dataset"
     dataset = LandscapeData(data_folder, transform=data_transforms['train'])  # Utilisez la transformation 'train'
     train_size = int(0.8 * len(dataset))
     val_size = len(dataset) - train_size
@@ -54,13 +55,30 @@ if __name__ == "__main__":
     print("Image : ", images.shape)
     print("masks : ", masks.shape)
 
+    #Initialize a Counter to count class frequencies
+    class_counter = Counter()
+
+    # Iterate over the training dataset to count class occurrences
+    for _, targets in train_loader:
+        class_counter.update(targets.flatten().numpy())
+
+    # Calculate proportions
+    total_samples = sum(class_counter.values())
+    class_proportions = {class_idx: count / total_samples for class_idx, count in class_counter.items()}
+
+    # Display class indices and proportions
+    for class_idx, proportion in class_proportions.items():
+        print(f"Class {class_idx}: Proportion = {proportion:.4f}")
+
+
+
     # move model to GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
     model.to(device)
 
-    Num_epoch=200
+    Num_epoch=100
     
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=2, factor=0.1)
 
@@ -73,8 +91,9 @@ if __name__ == "__main__":
     plt.legend()
     plt.show()
 
+    #affichage(model,val_loader,device)
     #print(mesure_on_dataloader(val_loader,device,model))
-    mean_iou, mean_accuracy, per_category_iou = compute_average_metrics(model, val_loader)
+    mean_iou, mean_accuracy, per_category_iou = compute_average_metrics(model, val_loader,classes_to_ignore=[0,1,7,8,9])
 
     print("Mean_iou:", mean_iou)
     print("Mean accuracy:", mean_accuracy)
