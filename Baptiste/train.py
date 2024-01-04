@@ -18,7 +18,7 @@ def train_model(model, optimizer,scheduler, num_epochs,data_loaders, patience=5)
     best_val_loss = float('inf')
     consecutive_epochs_no_improvement = 0
     best_model_wts = copy.deepcopy(model.state_dict())
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(ignore_index=0)
     dataset_sizes = {phase: len(data_loaders[phase].dataset) for phase in ['train', 'val']}
 
     for epoch in range(num_epochs):
@@ -43,9 +43,15 @@ def train_model(model, optimizer,scheduler, num_epochs,data_loaders, patience=5)
                         outputs = model(pixel_values)
                         logits = outputs
                         loss = criterion(logits, labels.squeeze(dim=1))
-                    else : 
+
+                    if args.segformer : 
                         outputs = model(pixel_values=pixel_values, labels=labels)
                         loss, logits = outputs.loss, outputs.logits
+
+
+
+
+
 
                     if phase == 'train':
                         loss.backward()
