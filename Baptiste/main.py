@@ -20,13 +20,12 @@ if __name__ == "__main__":
     ##Normalisation 
     means =  [ 418.19976217,  703.34810956,  663.22678147, 3253.46844222]
     stds =  [294.73191962, 351.31328415, 484.47475774, 793.73928079]
-    cur_means = means[:4]  
-    cur_stds = stds[:4]    
+
     ##transformations
     data_transforms = {
         'train': transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(cur_means, cur_stds),
+            transforms.Normalize(means, stds),
         ])
     }
 
@@ -35,7 +34,6 @@ if __name__ == "__main__":
         model,optimizer=segformer()
     elif args.unet :
         model = UNet2(4, 10, bilinear=False).to('cuda:0')
-        print(model)
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
     # move model to GPU
@@ -77,6 +75,16 @@ if __name__ == "__main__":
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=2, factor=0.1)
     ##training
     train_losses,val_losses , model  = train_model(model, optimizer,scheduler,  Num_epoch,data_loaders)
+
+    ##Eval on val loader 
+    #print(mesure_on_dataloader(val_loader,device,model))
+    mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, val_loader,classes_to_ignore=args.classes_to_ignore)
+    print("Mean_iou:", mean_iou)
+    print("Mean accuracy:", mean_accuracy)
+    print("IoU per category", per_category_iou)
+    print("OA", Overall_acc)
+    affichage(model,val_loader,device)
+
     ##plot losses
     plt.plot(train_losses, label='Train Loss')
     plt.plot(val_losses, label='Validation Loss')
@@ -84,16 +92,6 @@ if __name__ == "__main__":
     plt.ylabel('Loss')
     plt.legend()
     plt.show()
-
-
-    ##Eval on val loader 
-    affichage(model,val_loader,device)
-    #print(mesure_on_dataloader(val_loader,device,model))
-    mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, val_loader,classes_to_ignore=args.classes_to_ignore)
-    print("Mean_iou:", mean_iou)
-    print("Mean accuracy:", mean_accuracy)
-    print("IoU per category", per_category_iou)
-    print("OA", Overall_acc)
 
     # # save best model 
     print("Saving best model...")
