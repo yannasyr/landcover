@@ -1,7 +1,7 @@
 ## landcover
 Il reste a faire :
 
--Data_augment + créer un ensemble de test commun pour tout le monde (yann)
+-Data_augment + créer un ensemble de test commun pour tout le monde (yann) voir albumentation
 
 -trouver un modele en plus de segfomer et Unet
 
