@@ -3,8 +3,6 @@ Il reste a faire :
 
 -Data_augment (yann) voir albumentation
 
--Faire un test Set pour nos metriques Urgent pour lancer les entrainements. 
-
 -trouver un modele en plus de segfomer et Unet
 
 -Rapport (overleaf ??)
