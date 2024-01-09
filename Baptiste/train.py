@@ -48,11 +48,6 @@ def train_model(model, optimizer,scheduler, num_epochs,data_loaders, patience=5)
                         outputs = model(pixel_values=pixel_values, labels=labels)
                         loss, logits = outputs.loss, outputs.logits
 
-
-
-
-
-
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
@@ -84,6 +79,6 @@ def train_model(model, optimizer,scheduler, num_epochs,data_loaders, patience=5)
             break
 
     time_elapsed = time.time() - since
-    print("Training complete in {:.0f}m {:.0f}s".format(time_elapsed // 60, time_elapsed % 60))
+    print("Entraînement terminé en {:.0f}h {:.0f}m {:.0f}s".format(time_elapsed // 3600, (time_elapsed % 3600) // 60, time_elapsed % 60))
     model.load_state_dict(best_model_wts)
     return train_losses, val_losses, model
