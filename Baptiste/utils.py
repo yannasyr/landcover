@@ -1,44 +1,32 @@
 import os
-import random
-from shutil import move
-from torch.utils.data import DataLoader
-from Landscapedata import LandscapeData
+import shutil
+from tifffile import TiffFile
+from sklearn.model_selection import train_test_split
 
-# Supposons que vous avez une classe LandscapeData définie qui charge les images et les masques
-# data_transforms est votre transformation d'image
+def create_train_test_folders(data_folder, train_ratio=0.90):
+    image_folder = os.path.join(data_folder, 'images')
+    all_files = os.listdir(image_folder)
+    train_files, test_files = train_test_split(all_files, test_size=1 - train_ratio, random_state=42)
 
-data_folder = "dataset - Copie\\train"
-output_folder = "test"
-os.makedirs(output_folder, exist_ok=True)
 
-dataset = LandscapeData(data_folder)
+    train_folder = os.path.join(data_folder, 'train')
+    test_folder = os.path.join(data_folder, 'test')
 
-# Créer un DataLoader pour faciliter l'itération sur l'ensemble de données
-data_loader = DataLoader(dataset, batch_size=1, shuffle=True)
+    os.makedirs(train_folder, exist_ok=True)
+    os.makedirs(test_folder, exist_ok=True)
 
-# Nombre d'images à extraire pour le fichier test
-num_images_to_extract = 400
+    for filename in train_files:
+        image_path = os.path.join(image_folder, filename)
+        mask_path = image_path.replace("images", "masks")
+        shutil.move(image_path, os.path.join(train_folder, 'images', filename))
+        shutil.move(mask_path, os.path.join(train_folder, 'masks', filename.replace(".tif", ".tif")))
 
-# Compteur pour suivre le nombre d'images extraites
-count = 0
+    for filename in test_files:
+        image_path = os.path.join(image_folder, filename)
+        mask_path = image_path.replace("images", "masks")
+        shutil.move(image_path, os.path.join(test_folder, 'images', filename))
+        shutil.move(mask_path, os.path.join(test_folder, 'masks', filename.replace(".tif", ".tif")))
 
-for idx, (image, mask) in enumerate(data_loader):
-    # Vérifier si nous avons extrait le nombre souhaité d'images
-    if count == num_images_to_extract:
-        break
-
-    # Générer un nom de fichier unique pour l'image et le masque
-    filename = f"{idx}_{random.randint(1, 100000)}"
-
-    # Déplacer l'image vers le dossier de test
-    image_path = os.path.join(output_folder, f"image_{filename}.tif")
-    move(image_path, output_folder)
-
-    # Déplacer le masque correspondant vers le dossier de test
-    mask_path = os.path.join(output_folder, f"mask_{filename}.tif")
-    move(mask_path, output_folder)
-
-    # Incrémenter le compteur
-    count += 1
-
-print(f"Extraction terminée. {count} images déplacées vers le dossier de test.")
+# Example usage:
+data_folder = "datasetV2\\main"  # Replace with your actual dataset path
+create_train_test_folders(data_folder)
