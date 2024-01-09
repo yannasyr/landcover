@@ -31,11 +31,11 @@ if __name__ == "__main__":
 
     ##model selection
     if args.segformer :
-        model,optimizer=segformer()
+        model,optimizer,model_name=segformer()
     elif args.unet :
         model = UNet2(4, 10, bilinear=False).to('cuda:0')
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
-
+        model_name ="Unet"
     # move model to GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
@@ -71,28 +71,30 @@ if __name__ == "__main__":
 
     # Calculate proportions
     total_samples = sum(class_counter.values())
-    class_proportions = {class_idx: count / total_samples for class_idx, count in class_counter.items()}*100
+    class_proportions = {class_idx: count / total_samples for class_idx, count in class_counter.items()}
 
     # Display class indices and proportions
     for class_idx, proportion in class_proportions.items():
-        print(f"Class {class_idx}: Proportion = {proportion:.4f}")
+        print(f"Class {class_idx}: Proportion = {proportion*100:.4f}")
 
 
 
     #hyperparametres
-    Num_epoch=2
+    Num_epoch=200
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=2, factor=0.1)
     ##training
     train_losses,val_losses , model  = train_model(model, optimizer,scheduler,  Num_epoch,data_loaders)
 
     ##Eval on val loader 
-    #print(mesure_on_dataloader(val_loader,device,model))
+    
+    
+    print(mesure_on_dataloader(val_loader,device,model))
     mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, val_loader,classes_to_ignore=args.classes_to_ignore)
     print("Mean_iou:", mean_iou)
     print("Mean accuracy:", mean_accuracy)
     print("IoU per category", per_category_iou)
     print("OA", Overall_acc)
-    affichage(model,val_loader,device)
+    #affichage(model,val_loader,device)
 
     ##plot losses
     plt.plot(train_losses, label='Train Loss')
@@ -105,9 +107,7 @@ if __name__ == "__main__":
     # # save best model 
     if args.save_model :
         print("Saving best model...")
-        if not os.path.isdir('checkpoint'):
-                os.mkdir('checkpoint')
-        save_point = os.path.join("checkpoint", )
+        save_point = os.path.join("checkpoint", f"{model_name}")
         torch.save(model.state_dict(), save_point + '.pt')
         print("Model saved!")
 
