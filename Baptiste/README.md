@@ -1,7 +1,9 @@
 ## landcover
 Il reste a faire :
 
--Data_augment + créer un ensemble de test commun pour tout le monde (yann) voir albumentation
+-Data_augment (yann) voir albumentation
+
+-On a un dossier test avec le CSV containing the ground-truth class ditribution vectors for all samples in the training set. Faudrait faire un code de test avec ca. 
 
 -trouver un modele en plus de segfomer et Unet
 
