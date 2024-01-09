@@ -55,8 +55,7 @@ class LandscapeData(Dataset):
         image = self.transform(image)
         
         args = parser()
-        classes_to_ignore = args.classes_to_ignore  # Replace with actual class indices
-
+        classes_to_ignore = args.classes_to_ignore  
 
         if args.segformer : 
             # Modifiez la transformation pour le masque
