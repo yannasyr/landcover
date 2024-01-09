@@ -34,10 +34,14 @@ Mean accuracy: 0.8059646747377464
 
 IoU per category [       nan        nan 0.64163087 0.73150159 0.75959704 0.65111578 0.63654428        nan        nan        nan]
 
+
+
 Unet  sans les classes  [0,1,7,8,9]
 
 Mean_iou: 0.7583717354907262
+
 Mean accuracy: 0.855796475454197
-IoU per category [       nan        nan 0.73023121 0.80774726 0.8048192  0.72396396
- 0.72509706        nan        nan        nan]
+
+IoU per category [       nan        nan 0.73023121 0.80774726 0.8048192  0.72396396  0.72509706        nan        nan        nan]
+
 OA 0.8712198427578629
