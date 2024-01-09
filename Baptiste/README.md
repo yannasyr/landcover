@@ -3,7 +3,7 @@ Il reste a faire :
 
 -Data_augment (yann) voir albumentation
 
--On a un dossier test avec le CSV containing the ground-truth class ditribution vectors for all samples in the training set. Faudrait faire un code de test avec ca. 
+-Faire un test Set pour nos metriques Urgent pour lancer les entrainements. 
 
 -trouver un modele en plus de segfomer et Unet
 
