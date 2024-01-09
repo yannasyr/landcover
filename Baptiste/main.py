@@ -42,9 +42,10 @@ if __name__ == "__main__":
 
 
     ##dataset and dataloader
-    data_folder = "dataset\\train"
+    data_folder = "datasetV2\\main\\train"
     dataset = LandscapeData(data_folder, transform=data_transforms['train'])  # Utilisez la transformation 'train'
-    train_size = int(0.8 * len(dataset))
+    print(len(dataset))
+    train_size = int(0.9 * len(dataset))
     val_size = len(dataset) - train_size
     train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
@@ -52,6 +53,16 @@ if __name__ == "__main__":
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
     data_loaders = {'train': train_loader, 'val': val_loader}
+
+    # Number of images in train and val sets
+
+    num_train_images = len(train_dataset)
+    num_val_images = len(val_dataset)
+
+    print(f"Number of images in the training set: {num_train_images}")
+    print(f"Number of images in the validation set: {num_val_images}")
+
+
 
     #Initialize a Counter to count class frequencies
     class_counter = Counter()
@@ -71,7 +82,7 @@ if __name__ == "__main__":
 
 
     #hyperparametres
-    Num_epoch=200
+    Num_epoch=2
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=2, factor=0.1)
     ##training
     train_losses,val_losses , model  = train_model(model, optimizer,scheduler,  Num_epoch,data_loaders)
