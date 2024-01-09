@@ -22,7 +22,7 @@ Ici on lance le main avec le modele segformer la taille de batch est 16 et on ig
 
 ## Résultats :
 
-Je peux mettre les modeles sur Drive(trop gros pour git) pour faire vos tests a noter que la KL divergence ne marche pas pour Unet 
+Je peux mettre les modeles et le dossier de test que j'ai crée sur Drive(trop gros pour git) pour faire vos tests a noter que la KL divergence ne marche pas pour Unet 
 
 SegFormer miT-B0 sans les classes  [0,1,7,8,9]
 
