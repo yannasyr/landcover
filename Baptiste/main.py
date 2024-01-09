@@ -12,10 +12,11 @@ from arg_parser import parser
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from collections import Counter
+import torch.backends.cudnn as cudnn
 
 
 if __name__ == "__main__":
-
+    cudnn.benchmark = True
     args = parser()
     ##Normalisation 
     means =  [ 418.19976217,  703.34810956,  663.22678147, 3253.46844222]
@@ -33,61 +34,41 @@ if __name__ == "__main__":
     if args.segformer :
         model,optimizer,model_name=segformer()
     elif args.unet :
-        model = UNet2(4, 10, bilinear=False).to('cuda:0')
+        model = UNet2(4, 10, bilinear=False)
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
         model_name ="Unet"
     # move model to GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-
     ##dataset and dataloader
     data_folder = "datasetV2\\main\\train"
-    dataset = LandscapeData(data_folder, transform=data_transforms['train'])  # Utilisez la transformation 'train'
+    dataset = LandscapeData(data_folder, transform=data_transforms['train']) 
     print(len(dataset))
     train_size = int(0.9 * len(dataset))
     val_size = len(dataset) - train_size
     train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
 
     data_loaders = {'train': train_loader, 'val': val_loader}
 
     # Number of images in train and val sets
-
     num_train_images = len(train_dataset)
     num_val_images = len(val_dataset)
 
     print(f"Number of images in the training set: {num_train_images}")
     print(f"Number of images in the validation set: {num_val_images}")
 
-    #Initialize a Counter to count class frequencies
-    class_counter = Counter()
-
-    # Iterate over the training dataset to count class occurrences
-    for _, targets in train_loader:
-        class_counter.update(targets.flatten().numpy())
-
-    # Calculate proportions
-    total_samples = sum(class_counter.values())
-    class_proportions = {class_idx: count / total_samples for class_idx, count in class_counter.items()}
-
-    # Display class indices and proportions
-    for class_idx, proportion in class_proportions.items():
-        print(f"Class {class_idx}: Proportion = {proportion*100:.4f}")
-
-
-
     #hyperparametres
     Num_epoch=200
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=2, factor=0.1)
+
     ##training
     train_losses,val_losses , model  = train_model(model, optimizer,scheduler,  Num_epoch,data_loaders)
 
     ##Eval on val loader 
-    
-    
     print(mesure_on_dataloader(val_loader,device,model))
     mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, val_loader,classes_to_ignore=args.classes_to_ignore)
     print("Mean_iou:", mean_iou)
