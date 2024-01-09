@@ -10,7 +10,12 @@ def segformer(lr=0.0001):
         num_labels=10,
         num_channels=4,
         semantic_loss_ignore_index=0,
-        patch_sizes = [3, 2, 2, 2]
+        patch_sizes = [3, 2, 2, 2],
+
+        ##definition du type de modele ici Mit-B3 :
+        depths=[3, 4, 18, 3],
+        hidden_sizes=[64, 128, 320, 512],
+        decoder_hidden_size=768,
     )
 
     model = SegformerForSemanticSegmentation(config)
