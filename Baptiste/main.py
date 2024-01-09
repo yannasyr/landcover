@@ -62,8 +62,6 @@ if __name__ == "__main__":
     print(f"Number of images in the training set: {num_train_images}")
     print(f"Number of images in the validation set: {num_val_images}")
 
-
-
     #Initialize a Counter to count class frequencies
     class_counter = Counter()
 
@@ -73,7 +71,7 @@ if __name__ == "__main__":
 
     # Calculate proportions
     total_samples = sum(class_counter.values())
-    class_proportions = {class_idx: count / total_samples for class_idx, count in class_counter.items()}
+    class_proportions = {class_idx: count / total_samples for class_idx, count in class_counter.items()}*100
 
     # Display class indices and proportions
     for class_idx, proportion in class_proportions.items():
@@ -105,12 +103,13 @@ if __name__ == "__main__":
     plt.show()
 
     # # save best model 
-    print("Saving best model...")
-    if not os.path.isdir('checkpoint'):
-            os.mkdir('checkpoint')
-    save_point = os.path.join("checkpoint", )
-    torch.save(model.state_dict(), save_point + '.pt')
-    print("Model saved!")
+    if args.save_model :
+        print("Saving best model...")
+        if not os.path.isdir('checkpoint'):
+                os.mkdir('checkpoint')
+        save_point = os.path.join("checkpoint", )
+        torch.save(model.state_dict(), save_point + '.pt')
+        print("Model saved!")
 
 
 
