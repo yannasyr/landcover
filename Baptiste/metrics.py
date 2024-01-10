@@ -15,12 +15,14 @@ def get_Y(mask2d):
   return Y
 
 def klmetric(y_t, y_p, eps):
-  sum = 0
-  for i in range(len(y_t)):
-    sum += (y_t[i]+eps)*np.log((y_t[i] + eps) / (y_p[i] + eps))
-  return sum
+    sum = 0
+    for i in range(len(y_t)):
+        if y_t[i] != 0:  # Ignorer la classe avec le label 0
+            sum += (y_t[i] + eps) * np.log((y_t[i] + eps) / (y_p[i] + eps))
+    return sum
 
-def mesure_on_batch(batch_gt, batch_predi, batch_size=4):
+
+def mesure_on_batch(batch_gt, batch_predi, batch_size=8):
   mean = 0
   for i in range(batch_size):
     Y_pred = get_Y(batch_gt[i].cpu().numpy())

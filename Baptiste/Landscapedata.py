@@ -40,14 +40,8 @@ class LandscapeData(Dataset):
         # Liste des noms de fichiers dans les dossiers
         image_files = os.listdir(os.path.join(data_folder, 'images'))
 
-        # Séparation des données en ensembles d'entraînement, de validation et de test
-        train_files, test_files = train_test_split(image_files, test_size=0.2, random_state=42)
-        train_files, val_files = train_test_split(train_files, test_size=0.1, random_state=42)
-
         # Utilisez numpy_parse_image_mask pour charger les images et les masques
-        self.train_data = [numpy_parse_image_mask(os.path.join(data_folder, 'images', filename)) for filename in train_files]
-        self.val_data = [numpy_parse_image_mask(os.path.join(data_folder, 'images', filename)) for filename in val_files]
-        self.test_data = [numpy_parse_image_mask(os.path.join(data_folder, 'images', filename)) for filename in test_files]
+        self.train_data = [numpy_parse_image_mask(os.path.join(data_folder, 'images', filename)) for filename in image_files]
 
     def __len__(self):
         return len(self.train_data)
