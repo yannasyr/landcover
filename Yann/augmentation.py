@@ -1,9 +1,25 @@
+import os
 import cv2
-import numpy as np
-from tifffile import TiffFile, TiffWriter
 import shutil
 import random
-import os
+import numpy as np
+from tifffile import TiffFile, TiffWriter
+
+# README : Comment m'utiliser ? 
+
+# dossier train (déjà existant) sous la forme :
+# train/
+#   |___ images/
+#   |___ masks/
+
+# dossier train_augmented (sera créé) sous la forme :
+# train_augmented/
+#   |___ images/
+#   |___ masks/
+
+# Il y a donc deux variables à adapter à votre utilisation (CTRL+F)
+# - dossier_train : chemin du dossier ayant vos images de base.
+# - dossier_augmented : chemin du dossier qui va recueillir la version augmentée de la BDD. 
 
 # -------------- FONCTIONS UTILES -----------------
 
