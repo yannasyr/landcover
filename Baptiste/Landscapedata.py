@@ -26,6 +26,8 @@ def numpy_parse_image_mask(image_path):
         image = tifi.asarray()
         mask = tifm.asarray()
     return image, mask
+
+
 class LandscapeData(Dataset):
     N_CHANNELS = LandCoverData.N_CHANNELS
     IMG_SIZE = LandCoverData.IMG_SIZE
@@ -63,7 +65,6 @@ class LandscapeData(Dataset):
         args = parser()
         classes_to_ignore = args.classes_to_ignore  # Replace with actual class indices
 
-
         if args.segformer : 
             # Modifiez la transformation pour le masque
             label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
@@ -77,7 +78,6 @@ class LandscapeData(Dataset):
 
             # Apply the mask to the ground truth label
             label = label * ignore_mask
- 
 
 
         return image, label
