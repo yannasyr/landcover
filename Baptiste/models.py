@@ -7,21 +7,21 @@ from arg_parser import parser
 args = parser()
 
 
-def segformer(lr=0.001):
+def segformer(lr=0.0001):
     
 
-    if args.mit_b4 :
-        #Mit-B4 :
+    if args.mit_b3 :
+        #Mit-B3 :
         config = SegformerConfig(
             num_labels=10,
             num_channels=4,
             semantic_loss_ignore_index=0,
             patch_sizes = [3, 2, 2, 2],
-            depths=[3, 8, 27, 3],
+            depths=[3, 4, 18, 3],
             hidden_sizes=[64, 128, 320, 512],
             decoder_hidden_size=768,
         )
-        model_name ="SegformerMit-B4"
+        model_name ="SegformerMit-B3"
     else :  
         #Mit-B2 :
         config = SegformerConfig(
