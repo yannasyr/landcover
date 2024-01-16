@@ -14,7 +14,6 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from collections import Counter
 import torch.backends.cudnn as cudnn
 
-
 if __name__ == "__main__":
     cudnn.benchmark = True
     args = parser()
@@ -32,7 +31,7 @@ if __name__ == "__main__":
 
     ##model selection
     if args.segformer :
-        model,optimizer,model_name=segformer()
+        model,optimizer,model_name=segformer(lr=0.0001)
     elif args.unet :
         model = UNet2(4, 10, bilinear=False)
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
@@ -47,10 +46,10 @@ if __name__ == "__main__":
     print(len(dataset))
     train_size = int(0.9 * len(dataset))
     val_size = len(dataset) - train_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+    train_dataset, val_dataset = random_split(dataset, [train_size, val_size]) #a chaque lancement d'un entrainement nouveau set de validation -> plus robuste
 
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
     data_loaders = {'train': train_loader, 'val': val_loader}
 
@@ -63,10 +62,10 @@ if __name__ == "__main__":
 
     #hyperparametres
     Num_epoch=200
-    scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=2, factor=0.1)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=3, factor=0.1)
 
     ##training
-    train_losses,val_losses , model  = train_model(model, optimizer,scheduler,  Num_epoch,data_loaders)
+    train_losses,val_losses , model  = train_model(model,model_name, optimizer,scheduler,  Num_epoch,data_loaders)
 
     ##Eval on val loader 
     print(mesure_on_dataloader(val_loader,device,model))
@@ -77,7 +76,9 @@ if __name__ == "__main__":
     print("OA", Overall_acc)
     #affichage(model,val_loader,device)
 
-    ##plot losses
+
+
+ ##plot losses
     plt.plot(train_losses, label='Train Loss')
     plt.plot(val_losses, label='Validation Loss')
     plt.xlabel('Epoch')
@@ -85,32 +86,6 @@ if __name__ == "__main__":
     plt.legend()
     plt.show()
 
-    # # save best model 
-    if args.save_model :
-        print("Saving best model...")
-        save_point = os.path.join("checkpoint", f"{model_name}")
-        torch.save(model.state_dict(), save_point + '.pt')
-        print("Model saved!")
 
 
-
-
-
-
-
-##SegFormer##
-#     Mean_iou: 0.5198857023384602
-# Mean accuracy: 0.6122436394994278
-# IoU per category [       nan 0.         0.66164696 0.74257229 0.76370562 0.67365327
-#  0.64458844 0.38187744 0.         0.8109273 ]
-
-
-##segFormer## classes exclu : [0,1,7,8,9]
-
-
-##Unet##
-# Mean_iou: 0.488395057931877
-# Mean accuracy: 0.5732042679625972
-# IoU per category [       nan 0.         0.68719141 0.78629205 0.78929071 0.6984251
-#  0.68911637 0.         0.         0.74523988]
 
