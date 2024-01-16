@@ -6,12 +6,12 @@ import copy
 from arg_parser import parser
 import torch.nn as nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-
+import os
 args = parser()
 
 
 
-def train_model(model, optimizer,scheduler, num_epochs,data_loaders, patience=5):
+def train_model(model,model_name, optimizer,scheduler, num_epochs,data_loaders, patience=5):
     since = time.time()
     train_losses = []
     val_losses = []
@@ -77,6 +77,13 @@ def train_model(model, optimizer,scheduler, num_epochs,data_loaders, patience=5)
         if consecutive_epochs_no_improvement >= patience:
             print(f'Early stopping after {patience} consecutive epochs without improvement.')
             break
+                # Save the model every 5 epochs
+        if epoch % 5 == 0 and args.save_model:
+            print("Saving model at epoch {}...".format(epoch))
+            save_point = os.path.join("checkpoint", f"{model_name}_epoch{epoch}")
+            torch.save(model.state_dict(), save_point + '.pt')
+            print("Model saved!")
+
 
     time_elapsed = time.time() - since
     print("Entraînement terminé en {:.0f}h {:.0f}m {:.0f}s".format(time_elapsed // 3600, (time_elapsed % 3600) // 60, time_elapsed % 60))
