@@ -22,7 +22,7 @@ def klmetric(y_t, y_p, eps):
     return sum
 
 
-def mesure_on_batch(batch_gt, batch_predi, batch_size=8):
+def mesure_on_batch(batch_gt, batch_predi, batch_size=args.batch_size):
   mean = 0
   for i in range(batch_size):
     Y_pred = get_Y(batch_gt[i].cpu().numpy())
