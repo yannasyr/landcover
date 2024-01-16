@@ -30,7 +30,7 @@ def mesure_on_batch(batch_gt, batch_predi, batch_size=args.batch_size):
     mean += klmetric(Y_truth, Y_pred, 10e-8)
   return mean / batch_size
 
-def mesure_on_dataloader(val_loader,device,model):
+def mesure_on_dataloader(val_loader,device,model,batch_size=args.batch_size):
 
   mean = 0
   for i in range(len(val_loader)):
@@ -43,7 +43,7 @@ def mesure_on_dataloader(val_loader,device,model):
 
     _, predicted_labels = torch.max(test_logits, dim=1)
 
-    mean += mesure_on_batch(test_targets, predicted_labels)
+    mean += mesure_on_batch(test_targets, predicted_labels,batch_size=args.batch_size)
 
   return mean / len(val_loader)
 
