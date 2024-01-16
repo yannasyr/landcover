@@ -8,7 +8,6 @@ from transformers import SegformerForSemanticSegmentation
 import torch
 
 
-args = parser()
 ##Normalisation 
 means =  [ 418.19976217,  703.34810956,  663.22678147, 3253.46844222]
 stds =  [294.73191962, 351.31328415, 484.47475774, 793.73928079]
@@ -46,7 +45,7 @@ test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
 model.eval()
 ##Eval on val loader 
 print(mesure_on_dataloader(test_loader,device,model,batch_size=8))
-mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, test_loader,classes_to_ignore=args.classes_to_ignore)
+mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, test_loader,classes_to_ignore=[0,1,8]) #-> ignore les classes no data, clouds et snow -> aucune données
 print("Mean_iou:", mean_iou)
 print("Mean accuracy:", mean_accuracy)
 print("IoU per category", per_category_iou)
