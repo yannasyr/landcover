@@ -57,11 +57,7 @@ if __name__ == "__main__":
         val_size = (val_test_size - 1) // 2
         test_size = val_test_size - val_size
 
-    print("taille train_dataset = ", len(train_dataset), " / train_size = ", train_size, " / val_test_size = ", val_test_size)
-    print("Type train_dataset = ", type(train_dataset))
     train_dataset, val_test_dataset = random_split(train_dataset, [train_size, val_test_size], generator=torch.Generator().manual_seed(42))
-    print("taille val_test_dataset = ", len(val_test_dataset), " / val_size = ", val_size, " / test_size = ", test_size)
-    print("Type train_dataset = ", type(train_dataset), "/ Type val_test_dataset = ", type(val_test_dataset))
     val_dataset, test_dataset = random_split(val_test_dataset, [val_size, test_size], generator=torch.Generator().manual_seed(42))
 
     # Créer des DataLoader pour les ensembles d'entraînement, de validation et de test
