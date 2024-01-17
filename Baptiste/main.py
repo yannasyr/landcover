@@ -46,20 +46,44 @@ if __name__ == "__main__":
     print(len(dataset))
     train_size = int(0.9 * len(dataset))
     val_size = len(dataset) - train_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size]) #a chaque lancement d'un entrainement nouveau set de validation -> plus robuste
-
+    train_dataset, val_dataset = random_split(dataset, [train_size, val_size],random_state=42) 
+    
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
+
+        # Définir le chemin du dossier d'entraînement
+    train_data_folder = "datasetV2\\main\\train"
+
+    # Créer un objet Dataset pour l'ensemble d'entraînement
+    train_dataset = LandscapeData(train_data_folder, transform=data_transforms['train'])
+    print(len(train_dataset))
+
+    # Diviser l'ensemble d'entraînement en ensembles d'entraînement, de validation et de test (80% - 10% - 10%)
+    train_size = int(0.8 * len(train_dataset))
+    val_test_size = len(train_dataset) - train_size
+    val_size = test_size = val_test_size // 2
+
+
+    train_dataset, val_test_dataset = random_split(train_dataset, [train_size, val_test_size], random_state=42)
+    val_dataset, test_dataset = random_split(val_test_dataset, [val_size, test_size], random_state=42)
+
+    # Créer des DataLoader pour les ensembles d'entraînement, de validation et de test
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
+        
     data_loaders = {'train': train_loader, 'val': val_loader}
 
     # Number of images in train and val sets
     num_train_images = len(train_dataset)
     num_val_images = len(val_dataset)
+    num_test_images = len(test_dataset)
 
     print(f"Number of images in the training set: {num_train_images}")
     print(f"Number of images in the validation set: {num_val_images}")
-
+    print(f"Number of images in the validation set: {num_test_images}")
+    
     #hyperparametres
     Num_epoch=200
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=3, factor=0.1)
