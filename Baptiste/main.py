@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     ##dataset and dataloader
     # Définir le chemin du dossier d'entraînement
-    train_data_folder = 'D:/my_git/landscape_data/dataset/train/'
+    train_data_folder = 'train'
 
     # Créer un objet Dataset pour l'ensemble d'entraînement
     train_dataset = LandscapeData(train_data_folder, transform=data_transforms['train'])
