@@ -34,6 +34,13 @@ def segformer(lr=0.0001):
             decoder_hidden_size=768,
         )
         model_name ="SegformerMit-B2"
+
+        # Charger les poids pré-entrainés si le chemin est spécifié
+    model = SegformerForSemanticSegmentation(config)
+    if args.test:
+        pretrained_state_dict = torch.load("checkpoint\SegformerMit-B3_epoch30.pt")
+        model.load_state_dict(pretrained_state_dict)
+
     model = SegformerForSemanticSegmentation(config)
 
     # define optimizer
