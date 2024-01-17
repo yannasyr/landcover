@@ -31,6 +31,7 @@ if __name__ == "__main__":
     ##model selection
     if args.segformer :
         model,optimizer,model_name=segformer(lr=0.0001)
+        
     elif args.unet :
         model = UNet2(4, 10, bilinear=False)
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
