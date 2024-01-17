@@ -11,7 +11,6 @@ from models import segformer, UNet2
 from arg_parser import parser
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-from collections import Counter
 import torch.backends.cudnn as cudnn
 
 if __name__ == "__main__":
@@ -95,7 +94,7 @@ if __name__ == "__main__":
     print("Mean accuracy:", mean_accuracy)
     print("IoU per category", per_category_iou)
     print("OA", Overall_acc)
-    
+
     #affichage(model,val_loader,device)
 
 
