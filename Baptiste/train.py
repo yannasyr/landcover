@@ -77,7 +77,7 @@ def train_model(model,model_name, optimizer,scheduler, num_epochs,data_loaders, 
         if consecutive_epochs_no_improvement >= patience:
             print(f'Early stopping after {patience} consecutive epochs without improvement.')
             break
-                # Save the model every 5 epochs
+        # Save the model every 5 epochs
         if epoch % 5 == 0 and args.save_model:
             print("Saving model at epoch {}...".format(epoch))
             save_point = os.path.join("checkpoint", f"{model_name}_epoch{epoch}")
