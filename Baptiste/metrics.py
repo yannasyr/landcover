@@ -154,6 +154,6 @@ def compute_average_metrics(model, val_loader, classes_to_ignore=[]):
     mean_accuracy = metrics["mean_accuracy"]
     per_category_iou = metrics["per_category_iou"]
     Overall_Acc=metrics["overall_accuracy"]
-    
+    per_category_acc=metrics["per_category_accuracy"]
 
-    return mean_iou, mean_accuracy, per_category_iou,Overall_Acc
+    return mean_iou, mean_accuracy, per_category_iou,Overall_Acc,per_category_acc

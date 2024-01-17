@@ -22,11 +22,9 @@ Ici on lance le main avec le modele segformer la taille de batch est 16 et on ig
 
 # Résultats :
 
-Je peux mettre les modeles et le dossier de test que j'ai crée sur Drive(trop gros pour git) pour faire vos tests 
+Je peux mettre les modeles sur Drive(trop gros pour git) pour faire vos tests 
 
-Les tests sont effectué sur le test set 
-
-KL = 0.009414138180034
+Les tests sont effectués sur le test set 
 
 ## SegFormer mit-B3 Sans les classes 0 1 8 :
 

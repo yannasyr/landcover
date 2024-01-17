@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     print(f"Number of images in the training set: {num_train_images}")
     print(f"Number of images in the validation set: {num_val_images}")
-    print(f"Number of images in the validation set: {num_test_images}")
+    print(f"Number of images in the test set: {num_test_images}")
     
     #hyperparametres
     Num_epoch=200
@@ -93,11 +93,12 @@ if __name__ == "__main__":
 
     ##Eval on val loader or test loader -> args test or train 
     print(mesure_on_dataloader(dataloader_metrics,device,model))
-    mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, dataloader_metrics,classes_to_ignore=args.classes_to_ignore)
+    mean_iou, mean_accuracy, per_category_iou, Overall_acc,per_category_acc = compute_average_metrics(model, dataloader_metrics,classes_to_ignore=args.classes_to_ignore)
     print("Mean_iou:", mean_iou)
     print("Mean accuracy:", mean_accuracy)
     print("IoU per category", per_category_iou)
     print("OA", Overall_acc)
+    print("per category acc", per_category_acc)
 
     #affichage(model,val_loader,device)
 
