@@ -34,6 +34,9 @@ if __name__ == "__main__":
         
     elif args.unet :
         model = UNet2(4, 10, bilinear=False)
+        if args.test:
+            pretrained_state_dict = torch.load("Unet_epoch85.pt")
+            model.load_state_dict(pretrained_state_dict)
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
         model_name ="Unet"
     # move model to GPU
@@ -100,13 +103,19 @@ if __name__ == "__main__":
 
 
 
- ##plot losses
-    plt.plot(train_losses, label='Train Loss')
-    plt.plot(val_losses, label='Validation Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.legend()
-    plt.show()
+    # Ouvrir un fichier texte en mode écriture
+    with open('losses.txt', 'w') as file:
+        # Écrire les données de perte d'entraînement
+        file.write("Train Losses:\n")
+        for loss in train_losses:
+            file.write(str(loss) + '\n')
+
+        # Écrire les données de perte de validation
+        file.write("\nValidation Losses:\n")
+        for loss in val_losses:
+            file.write(str(loss) + '\n')
+
+    print("Les pertes ont été enregistrées dans le fichier 'losses.txt'.")
 
 
 

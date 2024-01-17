@@ -22,6 +22,21 @@ def segformer(lr=0.0001):
             decoder_hidden_size=768,
         )
         model_name ="SegformerMit-B3"
+
+    elif args.mit_b5 :
+        #Mit-B5 :
+        config = SegformerConfig(
+            num_labels=10,
+            num_channels=4,
+            semantic_loss_ignore_index=0,
+            patch_sizes = [3, 2, 2, 2],
+            depths=[3, 6, 40, 3],
+            hidden_sizes=[64, 128, 320, 512],
+            decoder_hidden_size=768,
+        )
+        model_name ="SegformerMit-B3"
+
+
     else :  
         #Mit-B2 :
         config = SegformerConfig(
@@ -37,11 +52,11 @@ def segformer(lr=0.0001):
 
         # Charger les poids pré-entrainés si le chemin est spécifié
     model = SegformerForSemanticSegmentation(config)
+     
     if args.test:
-        pretrained_state_dict = torch.load("checkpoint\SegformerMit-B3_epoch30.pt")
+        pretrained_state_dict = torch.load("SegformerMit-B3_epoch30.pt")
         model.load_state_dict(pretrained_state_dict)
 
-    model = SegformerForSemanticSegmentation(config)
 
     # define optimizer
     optimizer = torch.optim.AdamW(model.parameters(), lr)

@@ -22,13 +22,15 @@ Ici on lance le main avec le modele segformer la taille de batch est 16 et on ig
 
 ## Résultats :
 
-Je peux mettre les modeles et le dossier de test que j'ai crée sur Drive(trop gros pour git) pour faire vos tests a noter que la KL divergence ne marche pas pour Unet 
+Je peux mettre les modeles et le dossier de test que j'ai crée sur Drive(trop gros pour git) pour faire vos tests 
 
 Les tests sont effectué sur le test set 
 
 KL = 0.009414138180034
 
-SegFormer mit-B3 Sans les classes 0 1 8 :
+# SegFormer mit-B3 Sans les classes 0 1 8 :
+
+KL = 0.009414138180034
 
 Mean_iou: 0.6785667838462393
 
@@ -37,3 +39,15 @@ Mean accuracy: 0.7949927956010486
 IoU per category [       nan        nan 0.67038836 0.75204877 0.77864742 0.66767148   0.65640219 0.40321102        nan 0.82159825]
 
 OA 0.8362874562356236
+
+# Unet Sans les classes 0 1 8 :
+
+KL=0.026096049159138216
+
+Mean_iou: 0.6582043868495238
+
+Mean accuracy: 0.7559486492552072
+
+IoU per category [       nan        nan 0.72456639 0.81718307 0.8170067  0.73129368   0.73694275 0.     nan 0.78043813]
+
+OA 0.8743189385431362

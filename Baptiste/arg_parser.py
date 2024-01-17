@@ -13,6 +13,7 @@ def parser():
     parser.add_argument('--batch_size', '-batch', default=16, type=int, help='batch_size')    
     parser.add_argument('--save_model','-save', action='store_true', help='Saving checkpoints for current model')
     parser.add_argument('--mit_b3' , action='store_true', help='SegFormer Mit-B3') 
+    parser.add_argument('--mit_b5' , action='store_true', help='SegFormer Mit-B5') 
 
 
 
