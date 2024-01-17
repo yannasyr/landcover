@@ -1,4 +1,4 @@
-## landcover
+# landcover
 Il reste a faire :
 
 -Data_augment (yann) voir albumentation
@@ -11,7 +11,7 @@ Il reste a faire :
 
 -essayer RGB pre-entrainé
 
-## exemple de fonctionnement :
+# exemple de fonctionnement :
 
 Cloner le repo sur sa machine
 
@@ -20,7 +20,7 @@ executer : python main.py --segformer --batch 16 --classes_to_ignore 0 1
 Ici on lance le main avec le modele segformer la taille de batch est 16 et on ignore les classes 0 et 1 qui sont no_data et clouds
 
 
-## Résultats :
+# Résultats :
 
 Je peux mettre les modeles et le dossier de test que j'ai crée sur Drive(trop gros pour git) pour faire vos tests 
 
@@ -28,7 +28,7 @@ Les tests sont effectué sur le test set
 
 KL = 0.009414138180034
 
-# SegFormer mit-B3 Sans les classes 0 1 8 :
+## SegFormer mit-B3 Sans les classes 0 1 8 :
 
 KL = 0.009414138180034
 
@@ -40,7 +40,7 @@ IoU per category [       nan        nan 0.67038836 0.75204877 0.77864742 0.66767
 
 OA 0.8362874562356236
 
-# Unet Sans les classes 0 1 8 :
+## Unet Sans les classes 0 1 8 :
 
 KL=0.026096049159138216
 
