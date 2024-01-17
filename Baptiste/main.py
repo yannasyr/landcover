@@ -40,19 +40,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    ##dataset and dataloader
-    data_folder = "datasetV2\\main\\train"
-    dataset = LandscapeData(data_folder, transform=data_transforms['train']) 
-    print(len(dataset))
-    train_size = int(0.9 * len(dataset))
-    val_size = len(dataset) - train_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size],random_state=42) 
-    
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
-
-
-        # Définir le chemin du dossier d'entraînement
+    ##dataset and dataloaderÒ
+    # Définir le chemin du dossier d'entraînement
     train_data_folder = "datasetV2\\main\\train"
 
     # Créer un objet Dataset pour l'ensemble d'entraînement
