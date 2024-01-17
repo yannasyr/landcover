@@ -81,15 +81,21 @@ if __name__ == "__main__":
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=3, factor=0.1)
 
     ##training
-    train_losses,val_losses , model  = train_model(model,model_name, optimizer,scheduler,  Num_epoch,data_loaders)
+    if args.train :
+        train_losses,val_losses , model  = train_model(model,model_name, optimizer,scheduler,  Num_epoch,data_loaders)
+        dataloader_metrics=val_loader
+    if args.test :
+        dataloader_metrics=test_loader
 
-    ##Eval on val loader 
-    print(mesure_on_dataloader(val_loader,device,model))
-    mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, val_loader,classes_to_ignore=args.classes_to_ignore)
+
+    ##Eval on val loader or test loader -> args test or train 
+    print(mesure_on_dataloader(dataloader_metrics,device,model))
+    mean_iou, mean_accuracy, per_category_iou, Overall_acc = compute_average_metrics(model, dataloader_metrics,classes_to_ignore=args.classes_to_ignore)
     print("Mean_iou:", mean_iou)
     print("Mean accuracy:", mean_accuracy)
     print("IoU per category", per_category_iou)
     print("OA", Overall_acc)
+    
     #affichage(model,val_loader,device)
 
 
