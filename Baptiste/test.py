@@ -23,7 +23,6 @@ data_transforms = {
 
 
 model = SegformerForSemanticSegmentation.from_pretrained("checkpoint\SegformerMit-B4_epoch0.pt",
-                                                        num_labels=150, 
                                                         num_labels=10,
                                                         num_channels=4,
                                                         semantic_loss_ignore_index=0,
