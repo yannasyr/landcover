@@ -1,5 +1,5 @@
 from transformers import SegformerModel, SegformerConfig
-from transformers import AutoImageProcessor, SegformerForSemanticSegmentation
+from transformers import  SegformerForSemanticSegmentation
 import torch
 import torch.nn as nn
 import torchvision.models.segmentation as segmentation
