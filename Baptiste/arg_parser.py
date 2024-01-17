@@ -4,6 +4,9 @@ import argparse
 
 def parser():
     parser = argparse.ArgumentParser(description='Training')
+    parser.add_argument("--test", action='store_true', help='start testing ')
+    parser.add_argument("--train", action='store_true', help='start training  ')
+
     parser.add_argument('--segformer',  action='store_true', help='SegFormer for semantic segmantation')
     parser.add_argument('--unet', action='store_true', help='Unet')
     parser.add_argument('--classes_to_ignore','-classes_ign', default=[0, 1], nargs='+', type=int, help='List of numbers')
