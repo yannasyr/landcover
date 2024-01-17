@@ -40,9 +40,9 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    ##dataset and dataloaderÒ
+    ##dataset and dataloader
     # Définir le chemin du dossier d'entraînement
-    train_data_folder = "datasetV2\\main\\train"
+    train_data_folder = 'D:/my_git/landscape_data/dataset/train/'
 
     # Créer un objet Dataset pour l'ensemble d'entraînement
     train_dataset = LandscapeData(train_data_folder, transform=data_transforms['train'])
@@ -51,11 +51,18 @@ if __name__ == "__main__":
     # Diviser l'ensemble d'entraînement en ensembles d'entraînement, de validation et de test (80% - 10% - 10%)
     train_size = int(0.8 * len(train_dataset))
     val_test_size = len(train_dataset) - train_size
-    val_size = test_size = val_test_size // 2
+    if val_test_size % 2 == 0:
+        val_size = test_size = val_test_size // 2
+    else:
+        val_size = (val_test_size - 1) // 2
+        test_size = val_test_size - val_size
 
-
-    train_dataset, val_test_dataset = random_split(train_dataset, [train_size, val_test_size], random_state=42)
-    val_dataset, test_dataset = random_split(val_test_dataset, [val_size, test_size], random_state=42)
+    print("taille train_dataset = ", len(train_dataset), " / train_size = ", train_size, " / val_test_size = ", val_test_size)
+    print("Type train_dataset = ", type(train_dataset))
+    train_dataset, val_test_dataset = random_split(train_dataset, [train_size, val_test_size], generator=torch.Generator().manual_seed(42))
+    print("taille val_test_dataset = ", len(val_test_dataset), " / val_size = ", val_size, " / test_size = ", test_size)
+    print("Type train_dataset = ", type(train_dataset), "/ Type val_test_dataset = ", type(val_test_dataset))
+    val_dataset, test_dataset = random_split(val_test_dataset, [val_size, test_size], generator=torch.Generator().manual_seed(42))
 
     # Créer des DataLoader pour les ensembles d'entraînement, de validation et de test
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
