@@ -9,7 +9,7 @@ Il reste a faire :
 
 -Diapo (baba)
 
--essayer RGB pre-entrainé
+-essayer RGB pre-entrainé -> Baba
 
 # exemple de fonctionnement :
 
