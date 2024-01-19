@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import DataLoader, random_split
 from metrics import mesure_on_dataloader , affichage , compute_average_metrics
 import os 
-from models import segformer, UNet2
+from models import segformer, UNet2 
 from arg_parser import parser
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
@@ -17,10 +17,14 @@ if __name__ == "__main__":
     cudnn.benchmark = True
     args = parser()
     ##Normalisation 
-    means =  [ 418.19976217,  703.34810956,  663.22678147, 3253.46844222]
-    stds =  [294.73191962, 351.31328415, 484.47475774, 793.73928079]
+    if args.num_channels==4 :
+        means =  [ 418.19976217,  703.34810956,  663.22678147, 3253.46844222]
+        stds =  [294.73191962, 351.31328415, 484.47475774, 793.73928079]
+    else :
+        means =  [ 418.19976217,  703.34810956,  663.22678147]
+        stds =  [294.73191962, 351.31328415, 484.47475774]
 
-    ##transformations
+     ##transformations
     data_transforms = {
         'train': transforms.Compose([
             transforms.ToTensor(),
@@ -39,9 +43,14 @@ if __name__ == "__main__":
             model.load_state_dict(pretrained_state_dict)
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
         model_name ="Unet"
+
+
     # move model to GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
+
+
+
 
     ##dataset and dataloader
     # Définir le chemin du dossier d'entraînement
@@ -70,6 +79,11 @@ if __name__ == "__main__":
         
     data_loaders = {'train': train_loader, 'val': val_loader}
 
+
+    images, masks = next(iter(train_loader))
+    print("Image : ", images.shape)
+    print("masks : ", masks.shape)
+
     # Number of images in train and val sets
     num_train_images = len(train_dataset)
     num_val_images = len(val_dataset)
@@ -78,7 +92,8 @@ if __name__ == "__main__":
     print(f"Number of images in the training set: {num_train_images}")
     print(f"Number of images in the validation set: {num_val_images}")
     print(f"Number of images in the test set: {num_test_images}")
-    
+
+
     #hyperparametres
     Num_epoch=200
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=3, factor=0.1)
@@ -87,6 +102,19 @@ if __name__ == "__main__":
     if args.train :
         train_losses,val_losses , model  = train_model(model,model_name, optimizer,scheduler,  Num_epoch,data_loaders)
         dataloader_metrics=val_loader
+        # Ouvrir un fichier texte en mode écriture
+        with open('losses.txt', 'w') as file:
+            # Écrire les données de perte d'entraînement
+            file.write("Train Losses:\n")
+            for loss in train_losses:
+                file.write(str(loss) + '\n')
+
+            # Écrire les données de perte de validation
+            file.write("\nValidation Losses:\n")
+            for loss in val_losses:
+                file.write(str(loss) + '\n')
+
+        print("Les pertes ont été enregistrées dans le fichier 'losses.txt'.")
     if args.test :
         dataloader_metrics=test_loader
 
@@ -104,19 +132,7 @@ if __name__ == "__main__":
 
 
 
-    # Ouvrir un fichier texte en mode écriture
-    with open('losses.txt', 'w') as file:
-        # Écrire les données de perte d'entraînement
-        file.write("Train Losses:\n")
-        for loss in train_losses:
-            file.write(str(loss) + '\n')
-
-        # Écrire les données de perte de validation
-        file.write("\nValidation Losses:\n")
-        for loss in val_losses:
-            file.write(str(loss) + '\n')
-
-    print("Les pertes ont été enregistrées dans le fichier 'losses.txt'.")
+    
 
 
 

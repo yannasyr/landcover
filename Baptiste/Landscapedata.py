@@ -10,6 +10,9 @@ from torch.utils.data import DataLoader, random_split
 import os
 import torch
 from arg_parser import parser
+from skimage.transform import resize
+
+args = parser()
 
 def numpy_parse_image_mask(image_path):
     """Load an image and its segmentation mask as numpy arrays and returning a tuple
@@ -23,8 +26,10 @@ def numpy_parse_image_mask(image_path):
     # image should be in a images/<image_id>.tif subfolder, while the mask is at masks/<image_id>.tif
     mask_path = image_path.replace("images","masks")
     with TiffFile(image_path) as tifi, TiffFile(mask_path) as tifm:
-        image = tifi.asarray()
+        image = tifi.asarray()[:, :, :args.num_channels] 
+        
         mask = tifm.asarray()
+        print(f"Image shape: {image.shape}")
     return image, mask
 
 
@@ -53,13 +58,13 @@ class LandscapeData(Dataset):
         # Normalisez les valeurs des pixels dans la plage [0, 1]
         image = image.astype("float32")
         label = label.astype("int64")
-
+        # if args.num_channels==3 :
+        #     image = resize(image, (640, 640, channels), anti_aliasing=True)
         image = self.transform(image)
         
-        args = parser()
         classes_to_ignore = args.classes_to_ignore  # Replace with actual class indices
 
-        if args.segformer : 
+        if args.segformer or args.beit : 
             # Modifiez la transformation pour le masque
             label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
             label = label.squeeze()  # Supprimer la dimension ajoutée
@@ -72,6 +77,7 @@ class LandscapeData(Dataset):
 
             # Apply the mask to the ground truth label
             label = label * ignore_mask
+
 
 
         return image, label

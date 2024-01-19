@@ -1,4 +1,6 @@
 import numpy as np
+from arg_parser import parser
+args = parser()
 
 
 class LandCoverData():
@@ -8,7 +10,7 @@ class LandCoverData():
     # image size of the images and label masks
     IMG_SIZE = 256
     # the images are RGB+NIR (4 channels)
-    N_CHANNELS = 4
+    N_CHANNELS = args.num_channels
     # we have 9 classes + a 'no_data' class for pixels with no labels (absent in the dataset)
     N_CLASSES = 10
     CLASSES = [

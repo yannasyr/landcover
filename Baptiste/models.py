@@ -4,6 +4,9 @@ import torch
 import torch.nn as nn
 import torchvision.models.segmentation as segmentation
 from arg_parser import parser
+from transformers import BeitConfig, BeitModel
+from transformers import BeitForSemanticSegmentation
+
 args = parser()
 
 
@@ -34,9 +37,8 @@ def segformer(lr=0.0001):
             hidden_sizes=[64, 128, 320, 512],
             decoder_hidden_size=768,
         )
-        model_name ="SegformerMit-B3"
-
-
+        model_name ="SegformerMit-B5"
+        
     else :  
         #Mit-B2 :
         config = SegformerConfig(
@@ -53,16 +55,32 @@ def segformer(lr=0.0001):
         # Charger les poids pré-entrainés si le chemin est spécifié
     model = SegformerForSemanticSegmentation(config)
      
-    if args.test:
-        pretrained_state_dict = torch.load("SegformerMit-B3_epoch30.pt")
-        model.load_state_dict(pretrained_state_dict)
+    #if args.test:
+        # pretrained_state_dict = torch.load("SegformerMit-B3_epoch30.pt")
+        # model.load_state_dict(pretrained_state_dict)
 
+    if args.num_channels==3:
+        model = SegformerForSemanticSegmentation.from_pretrained("nvidia/mit-b5",
+                                                         num_labels=10,
+                                                         semantic_loss_ignore_index=0,
+                                                         depths=[3, 6, 40, 3],
+                                                         hidden_sizes=[64, 128, 320, 512],
+                                                         decoder_hidden_size=768, 
+                                                         )  
+        if args.test :
+            pretrained_dict = torch.load("SegformerMit-RGB_epoch35.pt")
+            model.load_state_dict(pretrained_dict)
+        
+        # Définir l'optimiseur
+        optimizer = torch.optim.AdamW(model.parameters(), lr)
 
     # define optimizer
     optimizer = torch.optim.AdamW(model.parameters(), lr)
 
 
     return model,optimizer,model_name
+
+
 
 
 
