@@ -31,9 +31,7 @@ def numpy_parse_image_mask(image_path):
     mask_path = image_path.replace("images","masks")
     with TiffFile(image_path) as tifi, TiffFile(mask_path) as tifm:
         image = tifi.asarray()[:, :, :args.num_channels] 
-        
         mask = tifm.asarray()
-        print(f"Image shape: {image.shape}")
     return image, mask
 
 
