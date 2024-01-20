@@ -62,7 +62,7 @@ class LandscapeData(Dataset):
         label = label.astype("int64")
         # if args.num_channels==3 :
         #     image = resize(image, (640, 640, channels), anti_aliasing=True)
-        image = self.transform(image)
+        image = self.transform(image=image)['image']
         
         classes_to_ignore = args.classes_to_ignore  # Replace with actual class indices
 
