@@ -13,7 +13,9 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torch.backends.cudnn as cudnn
 
+
 if __name__ == "__main__":
+
     cudnn.benchmark = True
     args = parser()
     ##Normalisation 
@@ -103,7 +105,8 @@ if __name__ == "__main__":
         train_losses,val_losses , model  = train_model(model,model_name, optimizer,scheduler,  Num_epoch,data_loaders)
         dataloader_metrics=val_loader
         # Ouvrir un fichier texte en mode écriture
-        with open('losses.txt', 'w') as file:
+        # Ouvrir un fichier texte en mode écriture
+        with open(f'losses_{model_name}.txt', 'w') as file:
             # Écrire les données de perte d'entraînement
             file.write("Train Losses:\n")
             for loss in train_losses:
@@ -115,6 +118,7 @@ if __name__ == "__main__":
                 file.write(str(loss) + '\n')
 
         print("Les pertes ont été enregistrées dans le fichier 'losses.txt'.")
+
     if args.test :
         dataloader_metrics=test_loader
 
