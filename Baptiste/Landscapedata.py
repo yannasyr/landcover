@@ -66,10 +66,14 @@ class LandscapeData(Dataset):
         
         classes_to_ignore = args.classes_to_ignore  # Replace with actual class indices
 
-        if args.segformer : 
+        if args.segformer or args.deeplab: 
             # Modifiez la transformation pour le masque
             label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
             label = label.squeeze()  # Supprimer la dimension ajoutée
+            
+
+
+
         elif args.unet :
             label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
         # Apply the mask of ignorance

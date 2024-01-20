@@ -6,6 +6,7 @@ import torchvision.models.segmentation as segmentation
 from arg_parser import parser
 from transformers import BeitConfig, BeitModel
 from transformers import BeitForSemanticSegmentation
+import torchvision.models as models
 
 args = parser()
 
@@ -184,3 +185,18 @@ class UNet2(nn.Module):
         logits = self.outc(x)
         logits = self.softmax(logits)
         return logits
+
+
+
+class DeepLab4Channel(nn.Module):
+    def __init__(self, num_classes):
+        super(DeepLab4Channel, self).__init__()
+        # Utilisez le modèle de base DeepLabV3 et ajustez la première couche pour accepter 4 canaux
+        self.deepLabBase = models.segmentation.deeplabv3_resnet50(pretrained=False)
+        # Remplacez la première couche pour accepter 4 canaux au lieu de 3
+        self.deepLabBase.backbone.conv1 = nn.Conv2d(4, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+        # Modifiez la dernière couche pour avoir le nombre de classes approprié
+        self.deepLabBase.classifier[-1] = nn.Conv2d(256, num_classes, kernel_size=(1, 1), stride=(1, 1))
+
+    def forward(self, x):
+        return self.deepLabBase(x)

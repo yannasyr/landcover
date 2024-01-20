@@ -41,8 +41,11 @@ def mesure_on_dataloader(val_loader,device,model,batch_size=args.batch_size):
       if args.segformer :
         test_outputs = model(pixel_values=test_pixels_values)
         test_logits = test_outputs.logits
-      else :
+      elif args.unet :
          test_outputs=model(test_pixels_values)
+         test_logits=test_outputs
+      elif args.deeplab :
+         test_outputs=model(test_pixels_values)['out']
          test_logits=test_outputs
 
     _, predicted_labels = torch.max(test_logits, dim=1)

@@ -8,7 +8,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from metrics import mesure_on_dataloader , affichage , compute_average_metrics
 from Landscapedata import LandscapeData
-from models import segformer, UNet2 
+from models import segformer, UNet2 , DeepLab4Channel
 from train import train_model
 from arg_parser import parser
 
@@ -49,6 +49,12 @@ if __name__ == "__main__":
             model.load_state_dict(pretrained_state_dict)
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
         model_name ="Unet"
+ 
+    elif args.deeplab:
+        model = DeepLab4Channel(10)
+        optimizer = optim.Adam(model.parameters(), lr=0.0001)
+        model_name ="deeplab"
+
 
     # Move model to GPU 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -57,7 +63,7 @@ if __name__ == "__main__":
     # ------------- DATASET & DATALOADER ----------- 
 
     # Définir le chemin du dossier d'entraînement
-    train_data_folder = 'train'
+    train_data_folder = 'small_dataset'
 
     # Créer un objet Dataset pour l'ensemble d'entraînement
     train_dataset = LandscapeData(train_data_folder, transform=data_transforms['train'])
