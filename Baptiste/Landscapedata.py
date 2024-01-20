@@ -1,18 +1,22 @@
-from LandCoverData import LandCoverData
-from tifffile import TiffFile
-import torchvision.transforms as transforms
-from torch.utils.data import Dataset
-from pathlib import Path
-from collections import OrderedDict
-from sklearn.model_selection import train_test_split
-from torchvision.transforms import ToTensor
-from torch.utils.data import DataLoader, random_split
-import os
 import torch
-from arg_parser import parser
+from torch.utils.data import Dataset
+from torchvision.transforms import ToTensor
+import torchvision.transforms as transforms
+from torch.utils.data import DataLoader, random_split
+
+from sklearn.model_selection import train_test_split
 from skimage.transform import resize
+from collections import OrderedDict
+from tifffile import TiffFile
+from pathlib import Path
+import os
+
+from LandCoverData import LandCoverData
+from arg_parser import parser
+
 
 args = parser()
+
 
 def numpy_parse_image_mask(image_path):
     """Load an image and its segmentation mask as numpy arrays and returning a tuple
@@ -77,7 +81,5 @@ class LandscapeData(Dataset):
 
             # Apply the mask to the ground truth label
             label = label * ignore_mask
-
-
 
         return image, label
