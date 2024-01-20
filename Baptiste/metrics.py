@@ -127,15 +127,16 @@ def compute_average_metrics(model, val_loader, classes_to_ignore=[]):
         for inputs, targets in val_loader:
             pixel_values = inputs.to('cuda:0')
             labels = targets.to('cuda:0')
+
             if args.unet : 
               outputs = model(pixel_values)
               logits=outputs
-            elif args.unet : 
+            elif args.segformer : 
               outputs = model(pixel_values=pixel_values, labels=labels)
               logits = outputs.logits
 
             elif args.deeplab :
-              outputs=model(pixel_values=pixel_values)['out']
+              outputs=model(pixel_values)['out']
               logits=outputs
 
             upsampled_logits = nn.functional.interpolate(logits, size=labels.shape[-2:], mode="bilinear", align_corners=False)

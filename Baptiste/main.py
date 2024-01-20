@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # ------------- TRAINING -----------
 
     #Hyper-parameters
-    Num_epoch=200
+    Num_epoch=2
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=3, factor=0.1)
 
     if args.train :
@@ -130,6 +130,7 @@ if __name__ == "__main__":
     if args.test :
         dataloader_metrics=test_loader
 
+    # ------------- TESTING -----------
     # Depending if args.train / args.test -> evaluation on val_loader / test_loader
     mean_iou, mean_accuracy, per_category_iou, Overall_acc,per_category_acc = compute_average_metrics(model, dataloader_metrics,classes_to_ignore=args.classes_to_ignore)
     

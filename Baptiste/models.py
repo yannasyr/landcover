@@ -192,7 +192,7 @@ class DeepLab4Channel(nn.Module):
     def __init__(self, num_classes):
         super(DeepLab4Channel, self).__init__()
         # Utilisez le modèle de base DeepLabV3 et ajustez la première couche pour accepter 4 canaux
-        self.deepLabBase = models.segmentation.deeplabv3_resnet50(pretrained=False)
+        self.deepLabBase = models.segmentation.deeplabv3_resnet50(weights=None)
         # Remplacez la première couche pour accepter 4 canaux au lieu de 3
         self.deepLabBase.backbone.conv1 = nn.Conv2d(4, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
         # Modifiez la dernière couche pour avoir le nombre de classes approprié

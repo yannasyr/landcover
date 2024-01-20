@@ -3,13 +3,9 @@ Il reste a faire :
 
 -Data_augment (yann) voir albumentation
 
--trouver un modele en plus de segfomer et Unet
-
 -Rapport (overleaf ??)
 
 -Diapo (baba)
-
--essayer RGB pre-entrainé -> Baba
 
 # exemple de fonctionnement :
 
