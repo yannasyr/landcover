@@ -130,9 +130,13 @@ def compute_average_metrics(model, val_loader, classes_to_ignore=[]):
             if args.unet : 
               outputs = model(pixel_values)
               logits=outputs
-            else : 
+            elif args.unet : 
               outputs = model(pixel_values=pixel_values, labels=labels)
               logits = outputs.logits
+
+            elif args.deeplab :
+              outputs=model(pixel_values=pixel_values)['out']
+              logits=outputs
 
             upsampled_logits = nn.functional.interpolate(logits, size=labels.shape[-2:], mode="bilinear", align_corners=False)
             predicted = upsampled_logits.argmax(dim=1)
