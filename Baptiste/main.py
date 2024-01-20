@@ -12,6 +12,9 @@ from models import segformer, UNet2
 from train import train_model
 from arg_parser import parser
 
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+
 import matplotlib.pyplot as plt
 import os 
 
@@ -31,11 +34,30 @@ if __name__ == "__main__":
 
     # Transformations 
     data_transforms = {
-        'train': transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize(means, stds),
+        'train': A.Compose([
+            A.Normalize(means, stds),
+            ToTensorV2()
+        ]),
+        'train_augmentation': A.Compose([
+            A.HorizontalFlip(p=0.7),
+            A.VerticalFlip(p=0.7),
+            A.RandomRotate90(p=0.7),
+            A.Transpose(p=0.7),
+            A.Normalize(means, stds),
+            ToTensorV2()
+        ]),
+        'test': A.Compose([
+            A.Normalize(means, stds),
+            ToTensorV2()
         ])
     }
+
+    # On pourrait rajouter dans l'augmentation cette transformation élastique, un peu violente ... ? 
+    # A.OneOf([
+    # A.ElasticTransform(alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03, p=0.5),
+    # A.GridDistortion(p=0.5),
+    # A.OpticalDistortion(distort_limit=2, shift_limit=0.5, p=1)                  
+    # ], p=0.8)
 
     # Model selection
     if args.segformer :
