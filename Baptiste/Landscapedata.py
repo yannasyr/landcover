@@ -31,9 +31,7 @@ def numpy_parse_image_mask(image_path):
     mask_path = image_path.replace("images","masks")
     with TiffFile(image_path) as tifi, TiffFile(mask_path) as tifm:
         image = tifi.asarray()[:, :, :args.num_channels] 
-        
         mask = tifm.asarray()
-        print(f"Image shape: {image.shape}")
     return image, mask
 
 
@@ -68,10 +66,14 @@ class LandscapeData(Dataset):
         
         classes_to_ignore = args.classes_to_ignore  # Replace with actual class indices
 
-        if args.segformer or args.beit : 
+        if args.segformer or args.deeplab: 
             # Modifiez la transformation pour le masque
             label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
             label = label.squeeze()  # Supprimer la dimension ajoutée
+            
+
+
+
         elif args.unet :
             label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
         # Apply the mask of ignorance

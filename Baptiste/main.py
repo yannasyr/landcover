@@ -8,7 +8,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from metrics import mesure_on_dataloader , affichage , compute_average_metrics
 from Landscapedata import LandscapeData
-from models import segformer, UNet2 
+from models import segformer, UNet2 , DeepLab4Channel
 from train import train_model
 from arg_parser import parser
 
@@ -17,6 +17,7 @@ from albumentations.pytorch import ToTensorV2
 
 import matplotlib.pyplot as plt
 import os 
+
 
 
 if __name__ == "__main__":
@@ -70,6 +71,12 @@ if __name__ == "__main__":
             model.load_state_dict(pretrained_state_dict)
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
         model_name ="Unet"
+ 
+    elif args.deeplab:
+        model = DeepLab4Channel(10)
+        optimizer = optim.Adam(model.parameters(), lr=0.0001)
+        model_name ="deeplab"
+
 
     # Move model to GPU 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -128,7 +135,8 @@ if __name__ == "__main__":
         train_losses,val_losses , model  = train_model(model,model_name, optimizer,scheduler,  Num_epoch,data_loaders)
         dataloader_metrics=val_loader
         # Ouvrir un fichier texte en mode écriture
-        with open('losses.txt', 'w') as file:
+        # Ouvrir un fichier texte en mode écriture
+        with open(f'losses_{model_name}.txt', 'w') as file:
             # Écrire les données de perte d'entraînement
             file.write("Train Losses:\n")
             for loss in train_losses:
@@ -144,6 +152,7 @@ if __name__ == "__main__":
     if args.test :
         dataloader_metrics=test_loader
 
+    # ------------- TESTING -----------
     # Depending if args.train / args.test -> evaluation on val_loader / test_loader
     mean_iou, mean_accuracy, per_category_iou, Overall_acc,per_category_acc = compute_average_metrics(model, dataloader_metrics,classes_to_ignore=args.classes_to_ignore)
     

@@ -44,9 +44,15 @@ def train_model(model,model_name, optimizer,scheduler, num_epochs,data_loaders, 
                         logits = outputs
                         loss = criterion(logits, labels.squeeze(dim=1))
 
-                    if args.segformer  : 
+                    elif args.segformer  : 
                         outputs = model(pixel_values=pixel_values, labels=labels)
                         loss, logits = outputs.loss, outputs.logits
+
+                    elif args.deeplab :
+                        outputs = model(pixel_values)['out']
+                        logits=outputs
+                        labels = labels.squeeze(1)
+                        loss = criterion(outputs, labels)
 
                     if phase == 'train':
                         loss.backward()
