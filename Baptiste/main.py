@@ -63,7 +63,7 @@ if __name__ == "__main__":
     # ------------- DATASET & DATALOADER ----------- 
 
     # Définir le chemin du dossier d'entraînement
-    train_data_folder = 'small_dataset'
+    train_data_folder = 'train'
 
     # Créer un objet Dataset pour l'ensemble d'entraînement
     train_dataset = LandscapeData(train_data_folder, transform=data_transforms['train'])
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # ------------- TRAINING -----------
 
     #Hyper-parameters
-    Num_epoch=2
+    Num_epoch=200
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=3, factor=0.1)
 
     if args.train :
