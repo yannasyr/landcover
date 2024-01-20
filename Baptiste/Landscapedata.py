@@ -68,7 +68,7 @@ class LandscapeData(Dataset):
         
         classes_to_ignore = args.classes_to_ignore  # Replace with actual class indices
 
-        if args.segformer or args.beit : 
+        if args.segformer : 
             # Modifiez la transformation pour le masque
             label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
             label = label.squeeze()  # Supprimer la dimension ajoutée
