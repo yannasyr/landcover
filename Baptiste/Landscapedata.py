@@ -13,6 +13,7 @@ import os
 
 from LandCoverData import LandCoverData
 from arg_parser import parser
+from metrics import get_Y
 
 
 args = parser()
@@ -36,13 +37,15 @@ def numpy_parse_image_mask(image_path):
 
 
 class LandscapeData(Dataset):
+
     N_CHANNELS = LandCoverData.N_CHANNELS
     IMG_SIZE = LandCoverData.IMG_SIZE
     TRAIN_PIXELS_MAX = LandCoverData.TRAIN_PIXELS_MAX
 
-    def __init__(self, data_folder, transform=ToTensor()):
+    def __init__(self, data_folder, transform=ToTensor(), transform_augm=None):
         self.data_folder = data_folder
         self.transform = transform
+        self.transform_augm = transform_augm
 
         # Liste des noms de fichiers dans les dossiers
         image_files = os.listdir(os.path.join(data_folder, 'images'))
@@ -54,34 +57,46 @@ class LandscapeData(Dataset):
         return len(self.train_data)
 
     def __getitem__(self, idx):
-        image, label = self.train_data[idx]
+        image, mask = self.train_data[idx]
         channels, height, width = self.N_CHANNELS, self.IMG_SIZE, self.IMG_SIZE
 
         # Normalisez les valeurs des pixels dans la plage [0, 1]
         image = image.astype("float32")
-        label = label.astype("int64")
-        # if args.num_channels==3 :
-        #     image = resize(image, (640, 640, channels), anti_aliasing=True)
-        image = self.transform(image=image)['image']
+        mask = mask.astype("int64")
+
+        # Memoire seuils : 0.3 / 0.3 / 0.3 / 0.6
+        seuil_per_water = 0.3
+        seuil_per_city = 0.3
+        seuil_per_natural = 0.3
+        seuil_per_conif = 0.6
+
+        Y = get_Y(mask) # Y[2] = 'artificial' ; Y[5] = 'coniferous' ; Y[7] = 'natural' ; Y[9] = 'water'
+
+        if (Y[2] > seuil_per_city or Y[9] > seuil_per_water or Y[5] > seuil_per_conif  or Y[7] > seuil_per_natural) and (self.transform_augm!=None):
+            # Augmentation de données
+            augmented = self.transform_augm(image=image, mask=mask)
+            image = augmented['image']
+            mask = augmented['mask']
+
+        else:
+            # Pas d'augmentation, transformation simple sur l'image.
+            image = self.transform(image=image)['image']
+
+            if args.segformer or args.deeplab:
+                mask = torch.tensor(mask, dtype=torch.int64) 
+                mask = mask.squeeze()
+
+            elif args.unet:
+                mask = torch.tensor(mask, dtype=torch.int64)
         
         classes_to_ignore = args.classes_to_ignore  # Replace with actual class indices
 
-        if args.segformer or args.deeplab: 
-            # Modifiez la transformation pour le masque
-            label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
-            label = label.squeeze()  # Supprimer la dimension ajoutée
-            
-
-
-
-        elif args.unet :
-            label = torch.tensor(label, dtype=torch.int64)  # Convertir en torch.Tensor
         # Apply the mask of ignorance
-        ignore_mask = torch.ones_like(label)
+        ignore_mask = torch.ones_like(mask)
         for class_idx in classes_to_ignore:
-            ignore_mask[label == class_idx] = 0
+            ignore_mask[mask == class_idx] = 0
 
             # Apply the mask to the ground truth label
-            label = label * ignore_mask
+            mask = mask * ignore_mask
 
-        return image, label
+        return image, mask

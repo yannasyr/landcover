@@ -19,7 +19,6 @@ import matplotlib.pyplot as plt
 import os 
 
 
-
 if __name__ == "__main__":
 
     cudnn.benchmark = True
@@ -85,35 +84,29 @@ if __name__ == "__main__":
     # ------------- DATASET & DATALOADER ----------- 
 
     # Définir le chemin du dossier d'entraînement
-    train_data_folder = 'train'
+    data_folder = 'D:/my_git/landscape_data/dataset/small_dataset/'
 
-    # Créer un objet Dataset pour l'ensemble d'entraînement
-    train_dataset = LandscapeData(train_data_folder, transform=data_transforms['train'])
-    print(len(train_dataset))
+    # Créer un objet Dataset pour l'ensemble.
+    full_dataset = LandscapeData(data_folder, transform=None)  
 
-    # Diviser l'ensemble d'entraînement en ensembles d'entraînement, de validation et de test (80% - 10% - 10%)
-    train_size = int(0.8 * len(train_dataset))
-    val_test_size = len(train_dataset) - train_size
-    if val_test_size % 2 == 0:
-        val_size = test_size = val_test_size // 2
-    else:
-        val_size = (val_test_size - 1) // 2
-        test_size = val_test_size - val_size
+    # Division en ensemble train (80%)  / validation (10%) / test (10%)
+    train_size = int(0.8 * len(full_dataset))
+    val_size = int(0.10 * len(full_dataset))
+    test_size = len(full_dataset) - train_size - val_size
+    train_dataset, val_dataset, test_dataset = random_split(full_dataset, [train_size, val_size, test_size], generator=torch.Generator().manual_seed(42))
 
-    train_dataset, val_test_dataset = random_split(train_dataset, [train_size, val_test_size], generator=torch.Generator().manual_seed(42))
-    val_dataset, test_dataset = random_split(val_test_dataset, [val_size, test_size], generator=torch.Generator().manual_seed(42))
+    train_dataset.dataset.transform = data_transforms['train']
+    val_dataset.dataset.transform = data_transforms['test']
+    test_dataset.dataset.transform = data_transforms['test']    
 
-    # Créer des DataLoader pour les ensembles d'entraînement, de validation et de test
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
-        
+    if args.augmentation :
+        train_dataset.dataset.transform_augm = data_transforms['train_augmentation']
+
+    train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=4, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=4, shuffle=False)
+
     data_loaders = {'train': train_loader, 'val': val_loader}
-
-
-    images, masks = next(iter(train_loader))
-    print("Image : ", images.shape)
-    print("masks : ", masks.shape)
 
     # Number of images in train and val sets
     num_train_images = len(train_dataset)
