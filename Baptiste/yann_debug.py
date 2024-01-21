@@ -124,15 +124,16 @@ class LandscapeData(Dataset):
         mask = mask.astype("int64")
 
         # Memoire seuils : 0.3 / 0.3 / 0.3 / 0.6
-        seuil_per_water = 0.3
-        seuil_per_city = 0.3
-        seuil_per_natural = 0.3
-        seuil_per_conif = 0.6
+        seuil_per_water = 0.00001
+        seuil_per_city = 0.00001
+        seuil_per_natural = 0.00001
+        seuil_per_conif = 0.00001
 
         Y = get_Y(mask) # Y[2] = 'artificial' ; Y[5] = 'coniferous' ; Y[7] = 'natural' ; Y[9] = 'water'
 
         if (Y[2] > seuil_per_city or Y[9] > seuil_per_water or Y[5] > seuil_per_conif  or Y[7] > seuil_per_natural) and (self.transform_augm!=None):
             # Augmentation de données
+            print("augmented!")
             augmented = self.transform_augm(image=image, mask=mask)
             image = augmented['image']
             mask = augmented['mask']
@@ -213,7 +214,7 @@ val_dataset.dataset.transform = data_transforms['test']
 test_dataset.dataset.transform = data_transforms['test']    
 
 # A changer pour le debug
-if False :
+if True :
     train_dataset.dataset.transform_augm = data_transforms['train_augmentation']
 
 train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
