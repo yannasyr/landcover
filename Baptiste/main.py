@@ -11,13 +11,12 @@ from Landscapedata import LandscapeData
 from models import segformer, UNet2 , DeepLab4Channel
 from train import train_model
 from arg_parser import parser
-
+import numpy as np 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
 import matplotlib.pyplot as plt
 import os 
-
 
 if __name__ == "__main__":
 
@@ -43,7 +42,7 @@ if __name__ == "__main__":
             A.VerticalFlip(p=0.7),
             A.RandomRotate90(p=0.7),
             A.Transpose(p=0.7),
-            A.Normalize(means, stds),
+            A.Normalize(means, stds,max_pixel_value=1.0),
             ToTensorV2()
         ]),
         'test': A.Compose([
@@ -73,6 +72,9 @@ if __name__ == "__main__":
  
     elif args.deeplab:
         model = DeepLab4Channel(10)
+        if args.test:
+            pretrained_state_dict = torch.load("deeplab_epoch40.pt")
+            model.load_state_dict(pretrained_state_dict)
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
         model_name ="deeplab"
 
@@ -84,7 +86,7 @@ if __name__ == "__main__":
     # ------------- DATASET & DATALOADER ----------- 
 
     # Définir le chemin du dossier d'entraînement
-    data_folder = 'D:/my_git/landscape_data/dataset/small_dataset/'
+    data_folder = 'train'
 
     # Créer un objet Dataset pour l'ensemble.
     full_dataset = LandscapeData(data_folder, transform=None)  
@@ -102,9 +104,9 @@ if __name__ == "__main__":
     if args.augmentation :
         train_dataset.dataset.transform_augm = data_transforms['train_augmentation']
 
-    train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=4, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=4, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
 
     data_loaders = {'train': train_loader, 'val': val_loader}
 
@@ -112,6 +114,8 @@ if __name__ == "__main__":
     num_train_images = len(train_dataset)
     num_val_images = len(val_dataset)
     num_test_images = len(test_dataset)
+
+
 
     print(f"Number of images in the training set: {num_train_images}")
     print(f"Number of images in the validation set: {num_val_images}")
