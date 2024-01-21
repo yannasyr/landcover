@@ -1,3 +1,6 @@
 *.tif
 __pycache__
 *.pyc
+*.pt
+*ipynb
+*.txt
