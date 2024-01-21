@@ -100,3 +100,4 @@ class LandscapeData(Dataset):
             mask = mask * ignore_mask
 
         return image, mask
+    
