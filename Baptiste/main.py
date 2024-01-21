@@ -26,16 +26,16 @@ if __name__ == "__main__":
 
     # Normalisation
     if args.num_channels==4 :
-        means =  [ 418.19976217,  703.34810956,  663.22678147, 3253.46844222]
-        stds =  [294.73191962, 351.31328415, 484.47475774, 793.73928079]
+        means =  (418.19976217, 703.34810956, 663.22678147, 3253.46844222)
+        stds =  (294.73191962, 351.31328415, 484.47475774, 793.73928079)
     else :
-        means =  [ 418.19976217,  703.34810956,  663.22678147]
-        stds =  [294.73191962, 351.31328415, 484.47475774]
+        means =  (418.19976217, 703.34810956, 663.22678147)
+        stds =  (294.73191962, 351.31328415, 484.47475774)
 
     # Transformations 
     data_transforms = {
         'train': A.Compose([
-            A.Normalize(means, stds),
+            A.Normalize(mean=means, std=stds, max_pixel_value=1.0),
             ToTensorV2()
         ]),
         'train_augmentation': A.Compose([
@@ -47,7 +47,7 @@ if __name__ == "__main__":
             ToTensorV2()
         ]),
         'test': A.Compose([
-            A.Normalize(means, stds),
+            A.Normalize(mean=means, std=stds, max_pixel_value=1.0),
             ToTensorV2()
         ])
     }
