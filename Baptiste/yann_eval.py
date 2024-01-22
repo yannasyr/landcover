@@ -1,23 +1,16 @@
-import csv
 import torch
-import torch.optim as optim
-from torch.utils.data import DataLoader, random_split
+import torch.nn as nn
+from torch.utils.data import DataLoader, random_split, Dataset
+from torchvision.transforms import ToTensor
+from transformers import  SegformerForSemanticSegmentation
 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-import matplotlib.pyplot as plt
 import os 
-
-import torch
-import torch.nn as nn
-
-from tifffile import TiffFile
-from torch.utils.data import Dataset
-from torchvision.transforms import ToTensor
-
+import csv
 import numpy as np
-
+from tifffile import TiffFile
 from tqdm import tqdm
 
 # ------------ MODEL
@@ -119,11 +112,29 @@ class UNet2(nn.Module):
         logits = self.softmax(logits)
         return logits
 
+# ----------- 2ème modèle.
+
+def segformer(num_channels=3, test=True):
+
+    if num_channels==3:
+        model = SegformerForSemanticSegmentation.from_pretrained("nvidia/mit-b5",
+                                                            num_labels=10,
+                                                            semantic_loss_ignore_index=0,
+                                                            depths=[3, 6, 40, 3],
+                                                            hidden_sizes=[64, 128, 320, 512],
+                                                            decoder_hidden_size=768, 
+                                                            )  
+        if test :
+            pretrained_dict = torch.load("D:/my_git/TPE-3A/SegformerMit-RGB_epoch35.pt", map_location=torch.device('cpu'))
+            model.load_state_dict(pretrained_dict)
+
+    return model
+
 # -------------- DATASET 
     
 def numpy_parse_image(image_path):
     with TiffFile(image_path) as tifi:
-        image = tifi.asarray()
+        image = tifi.asarray()[:,:,:3]
     return image
 
 class LandscapeData_eval(Dataset):
@@ -168,6 +179,8 @@ def evaluate(model, dataloader, device, output_csv_path, index):
 
             # Obtenez les prédictions du modèle
             outputs = model(inputs)
+            # Pour le segformer
+            outputs = outputs.logits
 
             # Obtenez les classes prédites en utilisant la classe avec la probabilité la plus élevée
             _, predicted_classes = outputs.max(dim=1)
@@ -207,15 +220,15 @@ data_transforms = {
     ])
 }
 
-model = UNet2(4, 10, bilinear=False)
-pretrained_state_dict = torch.load("D:/my_git/TPE-3A/Unet_epoch85.pt", map_location=torch.device('cpu'))
-model.load_state_dict(pretrained_state_dict)
-optimizer = optim.Adam(model.parameters(), lr=0.0001)
-model_name ="Unet"
+# model = UNet2(4, 10, bilinear=False)
+# pretrained_state_dict = torch.load("D:/my_git/TPE-3A/Unet_epoch85.pt", map_location=torch.device('cpu'))
+# model.load_state_dict(pretrained_state_dict)
+# optimizer = optim.Adam(model.parameters(), lr=0.0001)
+# model_name ="Unet"
 
+model = segformer()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-data_folder = 'D:/my_git/landscape_data/dataset/small_test/'
+data_folder = 'D:/my_git/landscape_data/dataset/test/'
 
 index_photos = os.listdir(data_folder+'images/')
 index = [name.replace('.tif', '') for name in index_photos]
@@ -223,6 +236,6 @@ eval_dataset = LandscapeData_eval(data_folder, transform=data_transforms['test']
 
 print(eval_dataset.__len__())
 eval_loader = DataLoader(eval_dataset, batch_size=4, shuffle=False)
-predictions = evaluate(model, eval_loader, device, 'C:/Users/kille/results.csv', index=index)
+predictions = evaluate(model, eval_loader, device, 'C:/Users/kille/results_segformerRGB.csv', index=index)
 
 print(len(predictions))
