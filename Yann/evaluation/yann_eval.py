@@ -1,8 +1,5 @@
 import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader, random_split, Dataset
-from torchvision.transforms import ToTensor
-from transformers import  SegformerForSemanticSegmentation
+from torch.utils.data import DataLoader
 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -10,21 +7,20 @@ from albumentations.pytorch import ToTensorV2
 import os 
 import csv
 import numpy as np
-from tifffile import TiffFile
 from tqdm import tqdm
 
 from models import UNet2
 from models import segformer_eval
 from Landscapedata import LandscapeData_eval
 
+# ------------- FONCTIONS UTILES -----------
 
 def get_Y(mask2d):
     occurrences = np.bincount(mask2d.flatten(), minlength=10)
     Y = occurrences / np.sum(occurrences)
     return Y
 
-
-def evaluate(model, dataloader, device, output_csv_path, index):
+def evaluate(model, model_name, dataloader, device, output_csv_path, index):
     model.eval()
     predictions = []
 
@@ -35,7 +31,8 @@ def evaluate(model, dataloader, device, output_csv_path, index):
             # Obtenez les prédictions du modèle
             outputs = model(inputs)
             # Pour le segformer
-            outputs = outputs.logits
+            if model_name == 'segformer':
+                outputs = outputs.logits
 
             # Obtenez les classes prédites en utilisant la classe avec la probabilité la plus élevée
             _, predicted_classes = outputs.max(dim=1)
@@ -50,10 +47,7 @@ def evaluate(model, dataloader, device, output_csv_path, index):
     for i, prediction in enumerate(predictions):
             # Formatage de chaque valeur de prédiction avec un pourcentage
             formatted_predictions = [f'{pourcent:.6f}' for pourcent in prediction]
-            
-            # Écrire la ligne dans le fichier CSV
-            # csv_writer.writerow([index[i]] + formatted_predictions)
-            print(f"index {index[i]} : Y = {formatted_predictions}")
+
 
     with open(output_csv_path, 'w', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
@@ -65,21 +59,21 @@ def evaluate(model, dataloader, device, output_csv_path, index):
         for i, prediction in enumerate(predictions):
             # Formatage de chaque valeur de prédiction avec un pourcentage
             formatted_predictions = [f'{pourcent:.6f}' for pourcent in prediction]
-            
             # Écrire la ligne dans le fichier CSV
-            # csv_writer.writerow([index[i]] + formatted_predictions)
+            csv_writer.writerow([index[i]] + formatted_predictions)
 
     return predictions
 
-# -------------- MAIN CODE 
+# -------------- MAIN CODE -----------
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # -- VARIABLES A MODIFIER ---------------------------------------------
 eval_folder = 'D:/my_git/landscape_data/dataset/small_dataset/'
-eval_csv_output_name = 'C:/Users/kille/results_segformerRGB.csv'
-path_model = "D:/my_git/TPE-3A/Unet_epoch85.pt"
-choix_modele = 'unet' # soit 'unet', soit 'segformer'. Si 'segformer', modifier bonnes options dans la fonction segformer()
+eval_csv_output_name = 'C:/Users/kille/results_small_segformer.csv'
+path_model = "D:/my_git/TPE-3A/SegformerMit-B5_epoch35.pt"
+choix_modele = 'segformer' # soit 'unet', soit 'segformer'. Si 'segformer', modifier bonnes options dans la fonction segformer()
+nb_channels = 4
 # ----------------------------------------------------------------------
 
 # Choix du modèle. 
@@ -89,7 +83,7 @@ if choix_modele == 'unet':
     model.load_state_dict(pretrained_state_dict)
     model_name ="Unet"
 else:
-    model, model_name = segformer_eval(path_dict_model=path_model, num_channels=4, mit_b2=True, device=device)
+    model, model_name = segformer_eval(path_dict_model=path_model, num_channels=nb_channels, mit_b5=True, device=device)
 
 # Transformées ----------------------------------------------------
 means =  (418.19976217, 703.34810956, 663.22678147, 3253.46844222)
@@ -106,8 +100,8 @@ data_transforms = {
 index_photos = os.listdir(eval_folder+'images/')
 index = [name.replace('.tif', '') for name in index_photos]
 
-eval_dataset = LandscapeData_eval(eval_folder, transform=data_transforms['test'])  
+eval_dataset = LandscapeData_eval(eval_folder, transform=data_transforms['test'], num_channels=nb_channels)  
 eval_loader = DataLoader(eval_dataset, batch_size=4, shuffle=False)
-predictions = evaluate(model, eval_loader, device, eval_csv_output_name, index=index)
+predictions = evaluate(model,choix_modele, eval_loader, device, eval_csv_output_name, index=index)
 
 print("Nombre de prédictions : ", len(predictions))

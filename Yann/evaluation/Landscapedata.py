@@ -4,30 +4,28 @@ from tifffile import TiffFile
 import os
 
 
-def numpy_parse_image(image_path):
+def numpy_parse_image(image_path, num_channels=4):
     with TiffFile(image_path) as tifi:
-        image = tifi.asarray()[:,:,:3]
+        image = tifi.asarray()[:,:,:num_channels]
     return image
 
 
 class LandscapeData_eval(Dataset):
 
-    def __init__(self, data_folder, transform=ToTensor()):
+    def __init__(self, data_folder, transform=ToTensor(), num_channels=4):
         self.data_folder = data_folder
         self.transform = transform
 
         # Liste des noms de fichiers dans les dossiers
         image_files = os.listdir(os.path.join(data_folder, 'images'))
-        print("Taille image_files = ", len(image_files))
 
         # Utilisez numpy_parse_image_mask pour charger les images et les masques
-        self.train_data = [numpy_parse_image(os.path.join(data_folder, 'images', filename)) for filename in image_files]
+        self.train_data = [numpy_parse_image(os.path.join(data_folder, 'images', filename), num_channels=num_channels) for filename in image_files]
 
     def __len__(self):
         return len(self.train_data)
 
     def __getitem__(self, idx):
-        print("idx = ", idx)
         image = self.train_data[idx]
 
         # Normalisez les valeurs des pixels dans la plage [0, 1]
