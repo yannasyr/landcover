@@ -158,7 +158,7 @@ def get_Y(mask2d):
     Y = occurrences / np.sum(occurrences)
     return Y
         
-def evaluate(model, dataloader, device, output_csv_path):
+def evaluate(model, dataloader, device, output_csv_path, index):
     model.eval()
     predictions = []
 
@@ -191,7 +191,7 @@ def evaluate(model, dataloader, device, output_csv_path):
             formatted_predictions = [f'{pourcent:.6f}' for pourcent in prediction]
             
             # Écrire la ligne dans le fichier CSV
-            csv_writer.writerow([f'{10087 + i}'] + formatted_predictions)
+            csv_writer.writerow([index[i]] + formatted_predictions)
 
     return predictions
 
@@ -215,14 +215,14 @@ model_name ="Unet"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-data_folder = 'D:/my_git/landscape_data/dataset/test/'
+data_folder = 'D:/my_git/landscape_data/dataset/small_test/'
+
+index_photos = os.listdir(data_folder+'images/')
+index = [name.replace('.tif', '') for name in index_photos]
 eval_dataset = LandscapeData_eval(data_folder, transform=data_transforms['test'])  
 
 print(eval_dataset.__len__())
-# eval_loader = DataLoader(eval_dataset, batch_size=4, shuffle=False)
+eval_loader = DataLoader(eval_dataset, batch_size=4, shuffle=False)
+predictions = evaluate(model, eval_loader, device, 'C:/Users/kille/results.csv', index=index)
 
-# predictions = evaluate(model, eval_loader, device, 'C:/Users/kille/results.csv')
-
-# print(len(predictions))
-
-
+print(len(predictions))
