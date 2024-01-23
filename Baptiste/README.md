@@ -1,11 +1,8 @@
 # landcover
 Il reste a faire :
-
--Data_augment (yann) voir albumentation
-
--Rapport (overleaf ??)
-
--Diapo (baba)
+- Rapport (en cours).
+- Diaporama.
+- Modèle avec augmentation et weighted loss. 
 
 # exemple de fonctionnement :
 
