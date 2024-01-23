@@ -16,6 +16,7 @@ def parser():
     parser.add_argument('--mit_b5' , action='store_true', help='SegFormer Mit-B5') 
     parser.add_argument('--num_channels','-chan', default=4, type=int, help='Number of spectral bands')
     parser.add_argument('--deeplab', action='store_true', help='deeplab model')
+    parser.add_argument('--weighted', action='store_true', help='appli weighted losss')
 
 
 
