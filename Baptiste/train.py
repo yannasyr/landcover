@@ -42,8 +42,27 @@ def train_model(model,model_name, optimizer,scheduler, num_epochs,data_loaders, 
     # `y_pred` doit contenir les logits avant l'application de softmax
 
 
+    if args.weighted :
+        # note: we set to 0 the weights for the classes "no_data"(0), "clouds"(1) and "snow"(8) to ignore these
+        class_weight = (1 / LCD.TRAIN_CLASS_COUNTS[:])* LCD.TRAIN_CLASS_COUNTS[:].sum() / (LCD.N_CLASSES)
+        class_weight[LCD.IGNORED_CLASSES_IDX] = 0.
 
-    criterion = nn.CrossEntropyLoss(weight=class_weight)
+
+        # Convertir en torch.Tensor
+        class_weight = torch.tensor(class_weight, dtype=torch.float32)
+
+        # Transférer sur CUDA si disponible
+        if torch.cuda.is_available():
+            class_weight = class_weight.cuda()
+
+        print(f"Will use class weights: {class_weight}")
+        criterion = nn.CrossEntropyLoss(weight=class_weight)
+        
+        
+    else :
+        criterion = nn.CrossEntropyLoss(ignore_index=0)
+        
+        
     dataset_sizes = {phase: len(data_loaders[phase].dataset) for phase in ['train', 'val']}
 
     for epoch in range(num_epochs):

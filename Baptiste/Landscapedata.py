@@ -70,6 +70,7 @@ class LandscapeData(Dataset):
         seuil_per_conif = 0.6
 
         Y = get_Y(mask) # Y[2] = 'artificial' ; Y[5] = 'coniferous' ; Y[7] = 'natural' ; Y[9] = 'water'
+        classes_to_ignore = args.classes_to_ignore  # Replace with actual class indices
 
         if self.transform_augm!=None:
             # Augmentation de données
@@ -87,7 +88,16 @@ class LandscapeData(Dataset):
 
             elif args.unet:
                 mask = torch.tensor(mask, dtype=torch.int64)
-        
+
+
+        if args.weighted==None:
+            # Apply the mask of ignorance
+            ignore_mask = torch.ones_like(label)
+            for class_idx in classes_to_ignore:
+                ignore_mask[label == class_idx] = 0
+
+                # Apply the mask to the ground truth label
+                label = label * ignore_mask
 
         return image, mask
     
