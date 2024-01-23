@@ -5,15 +5,14 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, random_split
 
 from sklearn.model_selection import train_test_split
-from skimage.transform import resize
 from collections import OrderedDict
 from tifffile import TiffFile
 from pathlib import Path
 import os
-
 from LandCoverData import LandCoverData
 from arg_parser import parser
 from metrics import get_Y
+import cv2
 
 
 args = parser()
@@ -72,7 +71,7 @@ class LandscapeData(Dataset):
 
         Y = get_Y(mask) # Y[2] = 'artificial' ; Y[5] = 'coniferous' ; Y[7] = 'natural' ; Y[9] = 'water'
 
-        if (Y[2] > seuil_per_city or Y[9] > seuil_per_water or Y[5] > seuil_per_conif  or Y[7] > seuil_per_natural) and (self.transform_augm!=None):
+        if self.transform_augm!=None:
             # Augmentation de données
             augmented = self.transform_augm(image=image, mask=mask)
             image = augmented['image']
@@ -89,15 +88,6 @@ class LandscapeData(Dataset):
             elif args.unet:
                 mask = torch.tensor(mask, dtype=torch.int64)
         
-        classes_to_ignore = args.classes_to_ignore  # Replace with actual class indices
-
-        # Apply the mask of ignorance
-        ignore_mask = torch.ones_like(mask)
-        for class_idx in classes_to_ignore:
-            ignore_mask[mask == class_idx] = 0
-
-            # Apply the mask to the ground truth label
-            mask = mask * ignore_mask
 
         return image, mask
     

@@ -28,7 +28,7 @@ class LandCoverData():
     # classes to ignore because they are not relevant. "no_data" refers to pixels without
     # a proper class, but it is absent in the dataset; "clouds" class is not relevant, it
     # is not a proper land cover type and images and masks do not exactly match in time.
-    IGNORED_CLASSES_IDX = [0, 1]
+    IGNORED_CLASSES_IDX = [0, 1,8]
 
     # The training dataset contains 18491 images and masks
     # The test dataset contains 5043 images and masks

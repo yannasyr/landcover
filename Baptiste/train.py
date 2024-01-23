@@ -7,6 +7,9 @@ from arg_parser import parser
 import torch.nn as nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import os
+from LandCoverData import LandCoverData as LCD
+import torch.nn.functional as F
+
 args = parser()
 
 
@@ -18,7 +21,29 @@ def train_model(model,model_name, optimizer,scheduler, num_epochs,data_loaders, 
     best_val_loss = float('inf')
     consecutive_epochs_no_improvement = 0
     best_model_wts = copy.deepcopy(model.state_dict())
-    criterion = nn.CrossEntropyLoss(ignore_index=0)
+
+
+    # note: we set to 0 the weights for the classes "no_data"(0) and "clouds"(1) to ignore these
+    class_weight = (1 / LCD.TRAIN_CLASS_COUNTS[:])* LCD.TRAIN_CLASS_COUNTS[:].sum() / (LCD.N_CLASSES)
+    class_weight[LCD.IGNORED_CLASSES_IDX] = 0.
+
+
+    # Convertir en torch.Tensor
+    class_weight = torch.tensor(class_weight, dtype=torch.float32)
+
+    # Transférer sur CUDA si disponible
+    if torch.cuda.is_available():
+        class_weight = class_weight.cuda()
+
+    print(f"Will use class weights: {class_weight}")
+
+    # Supposez que `y_true` et `y_pred` soient vos vraies étiquettes et prédictions respectives
+    # `y_true` doit être un tenseur contenant les indices de classe (entiers)
+    # `y_pred` doit contenir les logits avant l'application de softmax
+
+
+
+    criterion = nn.CrossEntropyLoss(weight=class_weight)
     dataset_sizes = {phase: len(data_loaders[phase].dataset) for phase in ['train', 'val']}
 
     for epoch in range(num_epochs):
@@ -46,7 +71,10 @@ def train_model(model,model_name, optimizer,scheduler, num_epochs,data_loaders, 
 
                     elif args.segformer  : 
                         outputs = model(pixel_values=pixel_values, labels=labels)
-                        loss, logits = outputs.loss, outputs.logits
+                        logits =outputs.logits
+                        upsampled_logits = nn.functional.interpolate(
+                        logits, size=labels.shape[-2:], mode="bilinear", align_corners=False)
+                        loss=criterion(upsampled_logits,labels)
 
                     elif args.deeplab :
                         outputs = model(pixel_values)['out']

@@ -71,12 +71,9 @@ def segformer(lr=0.0001):
         if args.test :
             pretrained_dict = torch.load("SegformerMit-RGB_epoch35.pt")
             model.load_state_dict(pretrained_dict)
-        
-        # Définir l'optimiseur
-        optimizer = torch.optim.AdamW(model.parameters(), lr)
 
     # define optimizer
-    optimizer = torch.optim.AdamW(model.parameters(), lr)
+    optimizer = torch.optim.Adam(model.parameters(), lr)
 
 
     return model,optimizer,model_name
