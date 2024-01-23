@@ -2,17 +2,11 @@ import torch
 from torch.utils.data import Dataset
 from torchvision.transforms import ToTensor
 import torchvision.transforms as transforms
-from torch.utils.data import DataLoader, random_split
-
-from sklearn.model_selection import train_test_split
-from collections import OrderedDict
 from tifffile import TiffFile
-from pathlib import Path
 import os
 from LandCoverData import LandCoverData
 from arg_parser import parser
 from metrics import get_Y
-import cv2
 
 
 args = parser()
