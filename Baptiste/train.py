@@ -23,7 +23,7 @@ def train_model(model,model_name, optimizer,scheduler, num_epochs,data_loaders, 
     best_model_wts = copy.deepcopy(model.state_dict())
 
 
-    # note: we set to 0 the weights for the classes "no_data"(0) and "clouds"(1) to ignore these
+    # note: we set to 0 the weights for the classes "no_data"(0), "clouds"(1) and "snow"(8) to ignore these
     class_weight = (1 / LCD.TRAIN_CLASS_COUNTS[:])* LCD.TRAIN_CLASS_COUNTS[:].sum() / (LCD.N_CLASSES)
     class_weight[LCD.IGNORED_CLASSES_IDX] = 0.
 
