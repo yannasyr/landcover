@@ -101,7 +101,7 @@ index_photos = os.listdir(eval_folder+'images/')
 index = [name.replace('.tif', '') for name in index_photos]
 
 eval_dataset = LandscapeData_eval(eval_folder, transform=data_transforms['test'], num_channels=nb_channels)  
-eval_loader = DataLoader(eval_dataset, batch_size=4, shuffle=False)
+eval_loader = DataLoader(eval_dataset, batch_size=1, shuffle=False)
 predictions = evaluate(model,choix_modele, eval_loader, device, eval_csv_output_name, index=index)
 
 print("Nombre de prédictions : ", len(predictions))
