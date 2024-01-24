@@ -156,3 +156,19 @@ OA 0.7969969071993864
 
 per category acc [       nan        nan 0.88306001 0.76163612 0.83761083 0.86135998
  0.76266096 0.85404544        nan 0.85985024]
+
+## Segformer MIT-B5 Augmentation (p=0.2) + Weighted Loss(avec natural=1) + Classes_Ignored = [0,1,8] (mais non c'est sur la partie validation ça rooh)
+
+ 0.022475961733666564
+ 
+Mean_iou: 0.6737172353277454
+
+Mean accuracy: 0.831419479394261
+
+IoU per category [       nan        nan 0.6113072  0.77358055 0.75207569 0.63048565
+ 0.70516033 0.42808411        nan 0.81532711]
+ 
+OA 0.8399064111104436
+
+per category acc [       nan        nan 0.94452205 0.8360912  0.83730454 0.86483134
+ 0.81812104 0.5535291         nan 0.96553707]
