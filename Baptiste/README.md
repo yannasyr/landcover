@@ -125,6 +125,22 @@ OA 0.8177371849598891
 per category acc [       nan        nan 0.89406548 0.79812128 0.84933898 0.87729572
  0.78020423 0.89702264        nan 0.81985258]
 
+## U-Net Augmentation (p=0.2) + Weighted Loss(avec natural=1) + Classes_Ignored = [0,1,8]
+
+ 0.03454798191315818
+ 
+Mean_iou: 0.6117048347202247
+
+Mean accuracy: 0.7622194414943716
+
+IoU per category [       nan        nan 0.61669964 0.77656405 0.77861903 0.67556434
+ 0.69882105 0.                nan 0.73566573]
+ 
+OA 0.843869509329675
+
+per category acc [       nan        nan 0.94684003 0.84664301 0.85880237 0.89257575
+ 0.80618614 0.                nan 0.98448879]
+
  ## Segformer MIT-B5 + Weighted Loss + Classes_Ignored = [0,1,8]
 
  0.07796208727084196
