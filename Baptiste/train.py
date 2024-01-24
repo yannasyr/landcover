@@ -23,20 +23,6 @@ def train_model(model,model_name, optimizer,scheduler, num_epochs,data_loaders, 
     best_model_wts = copy.deepcopy(model.state_dict())
 
 
-    # note: we set to 0 the weights for the classes "no_data"(0), "clouds"(1) and "snow"(8) to ignore these
-    class_weight = (1 / LCD.TRAIN_CLASS_COUNTS[:])* LCD.TRAIN_CLASS_COUNTS[:].sum() / (LCD.N_CLASSES)
-    class_weight[LCD.IGNORED_CLASSES_IDX] = 0.
-
-
-    # Convertir en torch.Tensor
-    class_weight = torch.tensor(class_weight, dtype=torch.float32)
-
-    # Transférer sur CUDA si disponible
-    if torch.cuda.is_available():
-        class_weight = class_weight.cuda()
-
-    print(f"Will use class weights: {class_weight}")
-
     # Supposez que `y_true` et `y_pred` soient vos vraies étiquettes et prédictions respectives
     # `y_true` doit être un tenseur contenant les indices de classe (entiers)
     # `y_pred` doit contenir les logits avant l'application de softmax
