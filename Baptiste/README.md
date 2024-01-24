@@ -112,10 +112,15 @@ per category acc [       nan        nan 0.78805123 0.84135008 0.84782107 0.80408
 ## U-Net Augmentation + Weighted Loss + Classes_Ignored = [0,1,8]
 
 0.0433296225277715
+
 Mean_iou: 0.6328018673377286
+
 Mean accuracy: 0.8451287015716559
+
 IoU per category [       nan        nan 0.59692087 0.72941721 0.76284218 0.66119263
  0.65187745 0.286752          nan 0.74061072]
+ 
 OA 0.8177371849598891
+
 per category acc [       nan        nan 0.89406548 0.79812128 0.84933898 0.87729572
  0.78020423 0.89702264        nan 0.81985258]
