@@ -19,6 +19,9 @@ def segformer_eval(path_dict_model, num_channels=4, mit_b2=False, mit_b3=False, 
             decoder_hidden_size=768,
         )
         model_name ="SegformerMit-B3"
+        model = SegformerForSemanticSegmentation(config)
+        pretrained_state_dict = torch.load(path_dict_model, map_location=device)
+        model.load_state_dict(pretrained_state_dict)
 
     elif mit_b5:
         #Mit-B5 :
@@ -32,6 +35,9 @@ def segformer_eval(path_dict_model, num_channels=4, mit_b2=False, mit_b3=False, 
             decoder_hidden_size=768,
         )
         model_name ="SegformerMit-B5"
+        model = SegformerForSemanticSegmentation(config)
+        pretrained_state_dict = torch.load(path_dict_model, map_location=device)
+        model.load_state_dict(pretrained_state_dict)
         
     elif mit_b2:  
         #Mit-B2 :
@@ -45,12 +51,11 @@ def segformer_eval(path_dict_model, num_channels=4, mit_b2=False, mit_b3=False, 
             decoder_hidden_size=768,
         )
         model_name ="SegformerMit-B2"
+        model = SegformerForSemanticSegmentation(config)
+        pretrained_state_dict = torch.load(path_dict_model, map_location=device)
+        model.load_state_dict(pretrained_state_dict)
 
-    model = SegformerForSemanticSegmentation(config)
-    pretrained_state_dict = torch.load(path_dict_model, map_location=device)
-    model.load_state_dict(pretrained_state_dict)
-
-    if num_channels==3:
+    elif num_channels==3:
         model = SegformerForSemanticSegmentation.from_pretrained("nvidia/mit-b5",
                                                          num_labels=10,
                                                          semantic_loss_ignore_index=0,
@@ -58,7 +63,7 @@ def segformer_eval(path_dict_model, num_channels=4, mit_b2=False, mit_b3=False, 
                                                          hidden_sizes=[64, 128, 320, 512],
                                                          decoder_hidden_size=768, 
                                                          )  
-        model_name = model_name + '_RGB'
+        model_name = 'mit-b5-RGB'
         pretrained_dict = torch.load(path_dict_model, map_location=device)
         model.load_state_dict(pretrained_dict)
 

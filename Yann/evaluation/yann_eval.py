@@ -21,6 +21,7 @@ def get_Y(mask2d):
     return Y
 
 def evaluate(model, model_name, dataloader, device, output_csv_path, index):
+    model = model.to(device)
     model.eval()
     predictions = []
 
