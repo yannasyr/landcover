@@ -125,7 +125,7 @@ OA 0.8177371849598891
 per category acc [       nan        nan 0.89406548 0.79812128 0.84933898 0.87729572
  0.78020423 0.89702264        nan 0.81985258]
 
-## U-Net Augmentation (p=0.2) + Weighted Loss(avec natural=1) + Classes_Ignored = [0,1,8]
+## U-Net Augmentation (p=0.2) + Weighted Loss(avec natural=1) + Classes_Ignored = [0,1,8] (mais non c'est sur la partie validation ça rooh)
 
  0.03454798191315818
  
