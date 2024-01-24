@@ -14,8 +14,9 @@ from arg_parser import parser
 import numpy as np 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+
 import matplotlib.pyplot as plt
-import torch.nn as nn
+import os 
 
 if __name__ == "__main__":
 
@@ -77,11 +78,10 @@ if __name__ == "__main__":
         optimizer = optim.Adam(model.parameters(), lr=0.0001)
         model_name ="deeplab"
 
+
     # Move model to GPU 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
-
-
 
     # ------------- DATASET & DATALOADER ----------- 
 
@@ -104,9 +104,9 @@ if __name__ == "__main__":
     if args.augmentation :
         train_dataset.dataset.transform_augm = data_transforms['train_augmentation']
 
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,num_workers=4,pin_memory=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False,num_workers=4,pin_memory=True)
-    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False,num_workers=4,pin_memory=True)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
 
     data_loaders = {'train': train_loader, 'val': val_loader}
 
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     # ------------- TRAINING -----------
 
     #Hyper-parameters
-    Num_epoch=1
+    Num_epoch=200
     scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=3, factor=0.1)
 
     if args.train :
