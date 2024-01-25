@@ -6,9 +6,7 @@ Il reste a faire :
 
 # exemple de fonctionnement :
 
-Cloner le repo sur sa machine
-
-executer : python main.py --segformer --batch 16 --classes_to_ignore 0 1 
+execute : python main.py --segformer --batch 16 --classes_to_ignore 0 1 
 
 Here we launch the segformer model with batch size 16 and we ignore classes 0 and 1 which are no_data and clouds 
 
