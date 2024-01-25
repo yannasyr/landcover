@@ -127,19 +127,19 @@ per category acc [       nan        nan 0.89406548 0.79812128 0.84933898 0.87729
 
 ## U-Net Augmentation (p=0.2) + Weighted Loss(avec natural=1) + Classes_Ignored = [0,1,8] (mais non c'est sur la partie validation ça rooh)
 
- 0.03454798191315818
+0.029245128278856867
+
+Mean_iou: 0.6147810712640253
+
+Mean accuracy: 0.7657136429545152
+
+IoU per category [       nan        nan 0.60846081 0.77586165 0.78502264 0.69144821
+ 0.70220743 0.                nan 0.74046676]
  
-Mean_iou: 0.6117048347202247
+OA 0.8454473082855734
 
-Mean accuracy: 0.7622194414943716
-
-IoU per category [       nan        nan 0.61669964 0.77656405 0.77861903 0.67556434
- 0.69882105 0.                nan 0.73566573]
- 
-OA 0.843869509329675
-
-per category acc [       nan        nan 0.94684003 0.84664301 0.85880237 0.89257575
- 0.80618614 0.                nan 0.98448879]
+per category acc [       nan        nan 0.95233951 0.83802884 0.85957739 0.9056874
+ 0.81752658 0.                nan 0.98683578]
 
  ## Segformer MIT-B5 + Weighted Loss + Classes_Ignored = [0,1,8]
 
