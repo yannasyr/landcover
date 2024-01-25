@@ -144,7 +144,7 @@ if __name__ == "__main__":
             for loss in val_losses:
                 file.write(str(loss) + '\n')
 
-        print("Les pertes ont été enregistrées dans le fichier 'losses.txt'.")
+        print(f"Les pertes ont été enregistrées dans le fichier 'losses_{model_name}.txt'.")
 
     if args.test :
         dataloader_metrics=test_loader
