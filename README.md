@@ -1,6 +1,6 @@
 # ENS Challenge Data 2021 : Land cover predictive modeling from satellite images
 
-Authors : [yannasyr](https://github.com/yannasyr) / [BaptistePodvin](https://github.com/BaptistePodvin) / [Nom Auteur 1](https://github.com/lenadhb)
+Authors : [yannasyr](https://github.com/yannasyr) / [BaptistePodvin](https://github.com/BaptistePodvin) / [lenadhb](https://github.com/lenadhb)
 
 This repository and project is motivated by a machine-learning workshop as part of the ISSD-3A formation at Télécom Physique Strasbourg. 
 
