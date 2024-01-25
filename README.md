@@ -1,6 +1,7 @@
 # ENS Challenge Data 2021 : Land cover predictive modeling from satellite images
 
 Authors : [yannasyr](https://github.com/yannasyr) / [BaptistePodvin](https://github.com/BaptistePodvin) / [Nom Auteur 1](https://github.com/lenadhb)
+
 This repository and project is motivated by a machine-learning workshop as part of the ISSD-3A formation at Télécom Physique Strasbourg. 
 
 The idea was to participate for the Challenge Data competition [“Land cover predictive modeling from satellite images”](https://challengedata.ens.fr/challenges/48) provided by Preligens.
